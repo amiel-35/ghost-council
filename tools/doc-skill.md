@@ -2,13 +2,23 @@
 
 ## Usage
 
-Colle ce prompt dans Claude, suivi du contenu brut du `skills/[nom]/SKILL.md` à documenter.
+```
+doc-skill [Nom]
+```
+
+Exemples :
+```
+doc-skill Socrate
+doc-skill Kant
+doc-skill Nietzsche
+```
 
 ---
 
 ## Prompt
 
 Tu génères la documentation d'un skill du projet ghost-council.
+Le skill à documenter est spécifié à la fin de ce message — lis `skills/[nom]/SKILL.md` pour en extraire le contenu.
 
 Le projet encode des méthodes philosophiques comme des opérations applicables à un texte, une décision ou un problème. L'enjeu : encoder la méthode, pas le personnage. "Tu es Kant" active de la biographie. Le skill Kant applique l'impératif catégorique comme une opération précise.
 
@@ -56,6 +66,4 @@ Le projet encode des méthodes philosophiques comme des opérations applicables 
 
 ---
 
-**SKILL.md à documenter :**
-
-[Colle ici le contenu du fichier]
+**Skill à documenter :** [NOM]
