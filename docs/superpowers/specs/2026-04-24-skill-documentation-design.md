@@ -17,9 +17,10 @@ Le README actuel présente le projet mais ne fournit pas de documentation détai
 
 1. **Une arborescence de documentation bilingue** (`docs/fr/` et `docs/en/`)
 2. **Un template de référence** (`docs/TEMPLATE.md`)
-3. **Un prompt standalone** (`tools/doc-skill.md`) utilisable dans n'importe quel Claude
-4. **Un skill Claude Code** (`skills/doc-skill/SKILL.md`) invocable avec `/doc-skill [nom]`
-5. **Un tableau de navigation** ajouté en fin de README (FR et EN)
+3. **Un prompt de documentation** (`tools/doc-skill.md`) — génère la doc FR + EN + ligne README d'un skill existant
+4. **Un prompt de création** (`tools/new-skill.md`) — génère un nouveau `skills/[nom]/SKILL.md` à partir d'un philosophe donné
+5. **Un skill Claude Code** (`skills/doc-skill/SKILL.md`) invocable avec `/doc-skill [nom]`
+6. **Un tableau de navigation** ajouté en fin de README (FR et EN)
 
 ---
 
@@ -32,7 +33,8 @@ ghost-council/
 │   ├── [nom]/SKILL.md               ← inchangé
 │   └── doc-skill/SKILL.md           ← nouveau : skill de génération
 ├── tools/
-│   └── doc-skill.md                 ← prompt standalone
+│   ├── doc-skill.md                 ← prompt : génère la doc d'un skill existant
+│   └── new-skill.md                 ← prompt : génère un nouveau SKILL.md
 ├── docs/
 │   ├── TEMPLATE.md                  ← structure de référence (commentée)
 │   ├── fr/
@@ -140,6 +142,19 @@ Ajouté en fin de README, dans les deux langues :
 ```
 
 Le skill `doc-skill` ajoute une ligne dans chaque tableau à chaque invocation.
+
+---
+
+## Prompt de création de skill (`tools/new-skill.md`)
+
+Le prompt prend en input : un nom de philosophe + éventuellement quelques notes sur sa méthode. Il génère un `skills/[nom]/SKILL.md` complet et conforme à la structure du projet.
+
+**Règles encodées dans le prompt :**
+- Critère d'entrée : la méthode doit être formalisable en verbes d'action concrets (si la section "Méthode" ne peut pas être écrite, le philosophe est hors scope)
+- Distinguer méthode et personnage — pas de biographie, pas de citations
+- Section "Limites connues" obligatoire et honnête
+- Catégorie Solide ou Fun selon la résistance à la formalisation
+- Output : un seul fichier avec délimiteur `---FILE: skills/[nom]/SKILL.md---`
 
 ---
 
