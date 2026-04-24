@@ -17,7 +17,7 @@ Le README actuel présente le projet mais ne fournit pas de documentation détai
 
 1. **Une arborescence de documentation bilingue** (`docs/fr/` et `docs/en/`)
 2. **Un template de référence** (`docs/TEMPLATE.md`)
-3. **Un prompt standalone** (`docs/PROMPT.md`) utilisable dans n'importe quel Claude
+3. **Un prompt standalone** (`tools/doc-skill.md`) utilisable dans n'importe quel Claude
 4. **Un skill Claude Code** (`skills/doc-skill/SKILL.md`) invocable avec `/doc-skill [nom]`
 5. **Un tableau de navigation** ajouté en fin de README (FR et EN)
 
@@ -31,9 +31,10 @@ ghost-council/
 ├── skills/
 │   ├── [nom]/SKILL.md               ← inchangé
 │   └── doc-skill/SKILL.md           ← nouveau : skill de génération
+├── tools/
+│   └── doc-skill.md                 ← prompt standalone
 ├── docs/
 │   ├── TEMPLATE.md                  ← structure de référence (commentée)
-│   ├── PROMPT.md                    ← prompt standalone
 │   ├── fr/
 │   │   ├── socrate.md
 │   │   ├── kant.md
@@ -81,7 +82,7 @@ Ce qui résiste à la formalisation. Développé depuis le SKILL.md, pas copié.
 
 ---
 
-## Prompt standalone (`docs/PROMPT.md`)
+## Prompt standalone (`tools/doc-skill.md`)
 
 Le prompt prend le contenu brut d'un SKILL.md en input et génère les deux fichiers + la ligne README avec des délimiteurs :
 
