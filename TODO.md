@@ -39,6 +39,16 @@ Inspiré de [llm-council](https://github.com/masatoEmata/llm-council) — plusie
 - L'arbitre synthétise les convergences et expose les contradictions irréductibles
 - Ne tranche pas — expose la carte des désaccords
 
+**Paramètre `arbiter` (optionnel)**
+Par défaut : Zeus — tranche depuis au-dessus, sans méthode propre.
+Remplaçable par n'importe quel skill de la collection : le philosophe applique alors sa méthode à l'arbitrage plutôt qu'au problème.
+Cas d'usage naturels :
+- **Nash** pour les décisions stratégiques et de négociation
+- **Aristote** pour les décisions empiriques (classer les convergences comme des cas, généraliser au minimum)
+- **Trump** comme red team — si le verdict tient avec Trump en arbitre, il est solide
+
+Limite : un arbitre avec sa propre méthode importe ses biais dans la synthèse. C'est voulu ou c'est un bug selon ce qu'on cherche.
+
 ### `/compare [A] [B] [question]` — confrontation ciblée
 Deux philosophes sur le même input, côte à côte. Fait apparaître les hypothèses incompatibles.
 Exemple : `compare Popper Marx "La réglementation des plateformes est-elle efficace ?"`
@@ -105,6 +115,6 @@ curl -s https://raw.githubusercontent.com/.../install.sh | bash
 
 ## Références
 
-- [llm-council](https://github.com/masatoEmata/llm-council) — délibération multi-agents, base pour `/council`
+- [llm-council (Karpathy)](https://github.com/karpathy/llm-council) — délibération multi-agents, base pour `/council`
 - [Philosophical Multiagent Debate (Du et al., 2023)](https://arxiv.org/abs/2305.14325) — paper sur les débats LLM comme mécanisme de vérité
 - [Constitutional AI (Anthropic)](https://arxiv.org/abs/2212.08073) — utilise des principes encodés pour guider le comportement, analogie avec les skills méthode
