@@ -3,6 +3,8 @@
 > Socrate, Popper, Wittgenstein, Sartre et quelques autres encodés comme skills.
 > Sans costume. Juste la méthode.
 
+[English below](#english)
+
 ---
 
 ## C'est quoi
@@ -59,18 +61,42 @@ Critère d'entrée : méthode formalisable en verbes d'action concrets. Si tu ne
 
 ## English
 
-A collection of markdown skills. Each one encodes a philosopher's reasoning method as a concrete operation you can run on any text, decision, or problem.
+A collection of markdown skills. Each file encodes a philosopher's reasoning method as a concrete operation you can run on any text, decision, brief, or problem.
 
-The idea: Popper, Wittgenstein, Socrates, Sartre and others had *methods*, not just opinions. These skills encode the method, not the character. A "you are Kant" prompt activates biography and fuzzy associations. That's not useful.
+The idea is simple: these people didn't just have opinions, they had *methods*. Popper systematically looks for ways to invalidate a hypothesis. Wittgenstein refuses to move forward until every term is properly defined. Sartre detects bad faith — the way we disguise our own choices as constraints. Socrates keeps asking questions until the contradiction surfaces.
 
-Skills are portable across Claude, GPT, and Gemini. Do with them what you want.
+These methods are useful. The problem with most "philosophical agents" is that they encode the character, not the method. A "you are Kant" prompt activates biography, simplification, and fuzzy associations. That's not what we want here.
 
-**Solid** (formalizable): Socrates, Plato, Aristotle, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal
+The skills encode the method. Do with them what you want.
 
-**Fun** (strong posture, looser formalization): Nietzsche, Machiavel, Freud, Darwin, Sun Tzu, Sartre
+### Skills
 
-Each skill has a "known limits" section — fun skills have longer ones.
+**Solid** (formalizable, low resistance to encoding) :
+Socrates, Plato, Aristotle, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal
+
+**Fun** (strong posture, partial formalization) :
+Nietzsche, Machiavel, Freud, Darwin, Sun Tzu, Sartre
+
+Each skill has a "known limits" section in its own file. Fun skills have longer ones — some philosophers resist formalization, and that's documented honestly.
+
+### Skill structure
+
+```
+skills/[name]/SKILL.md
+```
+
+- **Role** : the concrete operation
+- **Absolute rules** : what the method doesn't negotiate
+- **Method** : steps as action verbs
+- **Expected output** : what it produces
+- **Known limits** : where it breaks
+
+Plain markdown. Portable across Claude, GPT, Gemini.
+
+### Status
 
 Experimental, clearly labeled as such. As much an intellectual exercise as a tool — if the idea interests you, the philosopher list is open.
 
-Contribution criterion: formalizable method, concrete action verbs. If you can't write the "Method" section, the philosopher is probably out of scope.
+### Contribute
+
+Entry criterion: formalizable method in concrete action verbs. If you can't write the "Method" section, the philosopher is probably out of scope.
