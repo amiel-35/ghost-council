@@ -4,16 +4,13 @@
 
 Colle ce prompt dans Claude, suivi du nom du philosophe et de tes notes sur sa méthode (facultatif).
 
-Avant d'utiliser ce prompt, lis le guide de contribution :
-`docs/guide-ecrire-un-skill.md`
-
 ---
 
 ## Prompt
 
 Tu crées un nouveau skill pour le projet ghost-council.
 
-**Lis d'abord** le contenu du fichier `docs/guide-ecrire-un-skill.md` ci-dessous — il définit les critères d'entrée, la structure attendue et les règles de l'encodage. Respecte-le à la lettre.
+**Lis d'abord** `docs/guide-ecrire-un-skill.md` — il définit les critères d'entrée, la structure attendue et les règles de l'encodage. Respecte-le à la lettre.
 
 **Test d'entrée obligatoire :**
 Avant de générer quoi que ce soit, vérifie que tu peux écrire la section "Méthode" en verbes d'action concrets dans un ordre non-arbitraire. Si tu ne peux pas, dis-le clairement et arrête-toi là.
@@ -51,12 +48,6 @@ description: >
 [contenu complet]
 ---END---
 ```
-
----
-
-**Contenu de `docs/guide-ecrire-un-skill.md` :**
-
-[Colle ici le contenu du fichier]
 
 ---
 
