@@ -2,13 +2,23 @@
 
 ## Usage
 
-Colle ce prompt dans Claude, suivi du nom du philosophe et de tes notes sur sa méthode (facultatif).
+```
+new-skill [Nom]
+```
+
+Exemples :
+```
+new-skill Elon Musk
+new-skill Spinoza
+new-skill Hannah Arendt — méthode du jugement politique
+```
 
 ---
 
 ## Prompt
 
 Tu crées un nouveau skill pour le projet ghost-council.
+Le philosophe à encoder est spécifié à la fin de ce message.
 
 **Lis d'abord** `docs/guide-ecrire-un-skill.md` — il définit les critères d'entrée, la structure attendue et les règles de l'encodage. Respecte-le à la lettre.
 
@@ -51,6 +61,4 @@ description: >
 
 ---
 
-**Philosophe à encoder :**
-
-[Nom + notes éventuelles sur sa méthode]
+**Philosophe à encoder :** [NOM]
