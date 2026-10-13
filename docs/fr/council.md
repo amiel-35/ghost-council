@@ -1,5 +1,7 @@
 # council — Faire délibérer les méthodes avant de décider
 
+> Fiche courte. Pour l'installation, les définitions détaillées des costumes et des parties, les formats et le script : le [guide complet du conseil](../council/README.md).
+
 ## Pourquoi cet encodage ?
 
 Chaque ghost de la collection applique une méthode à un problème. Mais une décision qui engage gagne rarement à n'être lue que par une seule méthode : Popper cherche ce qui réfute, Pascal pèse l'asymétrie des enjeux, Machiavel lit les rapports de force, et aucun ne voit ce que voient les autres. `council` encode l'opération qui les fait travailler ensemble sans les mélanger : chaque angle travaille seul, en contexte vierge, puis un arbitre rend la carte de ce qui converge et de ce qui s'oppose.

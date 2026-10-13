@@ -1,5 +1,7 @@
 # council — Let the methods deliberate before you decide
 
+> Short page. For installation, detailed definitions of costumes and stakeholders, formats and the script: the [full council guide](../council/README.en.md).
+
 ## Why this encoding?
 
 Each ghost in the collection applies one method to a problem. But a decision that commits you rarely benefits from being read through a single method: Popper looks for what refutes, Pascal weighs asymmetric stakes, Machiavelli reads power dynamics, and none of them sees what the others see. `council` encodes the operation that makes them work together without blending them: each angle works alone, in a fresh context, then an arbiter returns the map of what converges and what clashes.
