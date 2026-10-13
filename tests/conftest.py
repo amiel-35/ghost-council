@@ -108,9 +108,13 @@ def fill(path: Path, **fields: str) -> str:
     return text
 
 
-def fill_cadrage(folder: Path, validated="oui, par le décideur le 2026-10-13") -> None:
-    fill(folder / "CADRAGE.md", Question="Faut-il passer en freemium ?",
-         **{"Grille_validée": validated})
+def fill_cadrage(folder: Path, validated="oui, par le décideur le 2026-10-13",
+                 verdict="prêt") -> None:
+    """Prépare le cadrage complet : CADRAGE.md, GRILLE.md validée, RELECTURE.md rendue."""
+    fill(folder / "CADRAGE.md", Question="Faut-il passer en freemium ?")
+    fill(folder / "GRILLE.md", **{"Grille_validée": validated})
+    if verdict is not None:
+        fill(folder / "RELECTURE.md", **{"Verdict_de_relecture": verdict})
 
 
 def fill_avis(folder: Path, seat_id: str, prefix="AVIS", position="Pas maintenant") -> None:

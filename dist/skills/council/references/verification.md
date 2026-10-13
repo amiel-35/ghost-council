@@ -74,7 +74,8 @@ numéro de point suivants.
 - **Numéroter en continu** d'un addendum à l'autre (A : points 1 à 9, B : 10 à 14),
   pour que chaque correction ait une référence stable.
 - **Chaque point** : ce que disait le dossier, ce qui est juste, la source, qui l'a
-  trouvé, quelle question ou option il touche.
+  trouvé (le vérificateur, ou « un angle » sans le nommer tant que le tour 1 n'est pas
+  clos), quelle question ou option il touche.
 - **Publier les corrections dès qu'elles sont confirmées**, avant le bilan et le
   tour 2. On garde les votes sous séquestre, pas les corrections.
 - **Retirer ses propres erreurs franchement.** Ne jamais retoucher le dossier une

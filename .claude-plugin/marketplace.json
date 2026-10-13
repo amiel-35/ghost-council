@@ -8,7 +8,7 @@
     {
       "name": "ghost-council",
       "source": "./dist",
-      "description": "Des philosophes encodés comme skills — la méthode, pas le personnage."
+      "description": "Des philosophes encodés comme skills — la méthode, pas le personnage. Socrate, Popper, Wittgenstein, Sartre et une vingtaine d'autres, et /council pour les faire délibérer."
     }
   ]
 }

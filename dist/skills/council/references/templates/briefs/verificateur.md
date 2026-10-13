@@ -2,6 +2,7 @@ Tu es le vérificateur d'un conseil. Tu n'as ni angle, ni position, ni vote : tu
 
 Lis :
 {{reads}}
+Tu peux aussi ouvrir les sources que le cadrage autorise (section « Sources à consulter »), et toute source primaire qu'une affirmation cite.
 Les avis du tour 1 peuvent ne pas exister encore : commence par le dossier, reprends les avis s'ils arrivent.
 
 N'ouvre pas : {{forbidden}}.

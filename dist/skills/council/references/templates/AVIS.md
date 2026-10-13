@@ -23,7 +23,11 @@
 
 <La donnée ou le test le moins cher qui trancherait, et le résultat, fixé maintenant, qui ferait changer cette position.>
 
-## 5. Sources
+## 5. Où le cadrage est faux, incomplet ou mal posé
+
+<Un fait du cadrage contredit par sa source, une option absente, une question à reposer. « Rien » ne vaut qu'après avoir vérifié.>
+
+## 6. Sources
 
 | Affirmation | Type | Source ou méthode |
 |---|---|---|

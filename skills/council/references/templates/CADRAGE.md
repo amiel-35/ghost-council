@@ -3,35 +3,28 @@
 
 **Séance :** {{date}}, format `{{format}}`. **Décideur :** l'humain. Le conseil éclaire, il ne tranche pas.
 
-**Question :** <la décision en une question fermée>
-**Grille validée :** <oui, par qui et quand ; tant que ce n'est pas oui, le tour ne part pas>
+**Question :** <la décision en une question fermée et neutre>
+
+Ce cadrage a pu se tromper. Vérifiez-le, et dites où il est faux, incomplet ou mal posé.
 
 ## 1. Contexte
 
-<Les deux ou trois faits sans lesquels on raisonne à faux, chacun avec sa source.>
+<Les faits sans lesquels on raisonne à faux. Chacun recopié depuis sa source, relue au moment d'écrire, avec cette source et sa date. Ce qui ne vient que d'une source orale le dit. Ni penchant du décideur, ni raison d'être des angles : ça va dans GRILLE.md.>
 
 ## 2. Sources à consulter
 
-<Les fichiers ou liens précis que les angles peuvent lire. Rien d'autre. « Aucune » est une réponse valide.>
+<Les fichiers ou liens précis que les angles peuvent lire, et rien d'autre. Jamais un avis déjà rendu sur la même question. « Aucune » est une réponse valide.>
 
 ## 3. Options sur la table
 
-| Option | Ce qu'elle veut dire | Réversible ? |
+| Option | Ce qu'elle veut dire | Ce qui est engagé ou transmis (des faits, pas un jugement) |
 |---|---|---|
 | Ne rien faire | ... | |
 | ... | ... | |
 
-## 4. La grille
+## 4. Ce qu'on ne sait pas
 
-| Id | Angle | Référence | Modèle |
-|---|---|---|---|
-{{roster_table}}
-
-**Arbitre :** {{arbiter_label}} (`{{arbiter_ref}}`, modèle {{arbiter_model}}).
-
-- **Pourquoi ces angles :** <ce que chacun couvre que les autres ne couvrent pas>
-- **L'angle qui a intérêt à ne rien faire :** <lequel, ou pourquoi la question ne s'y prête pas>
-- **Angles écartés, et pourquoi :** <...>
+<Les inconnues qui comptent, et où chacune a été cherchée.>
 
 ## 5. Règles de la séance
 

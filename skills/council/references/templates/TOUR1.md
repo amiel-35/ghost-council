@@ -12,7 +12,7 @@
 
 <Trois à six points. La méthode appliquée, pas résumée.>
 
-## 2. Où le dossier est faux, incomplet ou mal posé
+## 2. Où le cadrage ou le dossier sont faux, incomplets ou mal posés
 
 <Chiffres faux, bases mélangées, un point favorable montré seul, une option absente, une question à reposer. « Rien trouvé » ne vaut qu'après avoir cherché.>
 

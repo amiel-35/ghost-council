@@ -1,21 +1,107 @@
 {
   "name": "compare",
   "description": "Deux angles côte à côte sur la même question. Pas de verdict : la divergence nommée sous forme de question. --arbiter aucun pour la pure juxtaposition.",
-  "seats": {"min": 2, "max": 2, "recommended": [2, 2]},
-  "arbiter": {"default": "neutre", "optional": true},
+  "seats": {
+    "min": 2,
+    "max": 2,
+    "recommended": [
+      2,
+      2
+    ]
+  },
+  "arbiter": {
+    "default": "neutre",
+    "optional": true
+  },
   "steps": [
     {
       "id": "cadrage",
-      "label": "Cadrage et paire validée",
+      "label": "Cadrage",
       "file": "CADRAGE.md",
       "template": "CADRAGE.md",
       "role": "organisateur",
-      "fields": ["Question", "Grille validée"],
-      "expect": [
-        {"field": "Grille validée", "starts_with": "oui", "severity": "error",
-         "message": "la paire d'angles n'est pas validée : la faire valider avant le tour (règle 4)"}
+      "fields": [
+        "Question"
       ],
-      "next": "remplir CADRAGE.md et faire valider la paire d'angles"
+      "next": "remplir CADRAGE.md (question fermée et neutre, faits sourcés, sources, options dont « ne rien faire ») ; voir references/cadrage.md"
+    },
+    {
+      "id": "grille",
+      "label": "Grille validée",
+      "file": "GRILLE.md",
+      "template": "GRILLE.md",
+      "role": "organisateur",
+      "after": [
+        "cadrage"
+      ],
+      "fields": [
+        "Grille validée"
+      ],
+      "expect": [
+        {
+          "field": "Grille validée",
+          "starts_with": "oui",
+          "severity": "error",
+          "message": "la grille n'est pas validée : la faire valider par le décideur avant le tour (règle 4)"
+        }
+      ],
+      "next": "remplir GRILLE.md (ce que couvre chaque angle, les trois sièges, le penchant du décideur) et faire valider la grille ; voir references/cadrage.md"
+    },
+    {
+      "id": "parties",
+      "label": "Fiches des parties prenantes",
+      "file": "PARTIES.md",
+      "template": "PARTIES.md",
+      "role": "organisateur",
+      "requires_parties": true,
+      "after": [
+        "cadrage"
+      ],
+      "party_cards": true,
+      "next": "remplir une fiche par partie dans PARTIES.md (qui, mandat, ce qu'elle gagne ou perd, priorités, angles morts, lignes rouges) ; voir references/cadrage.md"
+    },
+    {
+      "id": "relecture",
+      "label": "Relecture du cadrage",
+      "file": "RELECTURE.md",
+      "template": "RELECTURE.md",
+      "brief": "relecture.md",
+      "role": "verificateur",
+      "after": [
+        "grille",
+        "parties"
+      ],
+      "reads": [
+        "cadrage",
+        "grille",
+        "parties"
+      ],
+      "fields": [
+        "Verdict de relecture"
+      ],
+      "expect": [
+        {
+          "field": "Verdict de relecture",
+          "starts_with": "prêt",
+          "severity": "error",
+          "message": "le relecteur demande des corrections : corriger le cadrage, puis relancer la relecture (`council.py brief SEANCE relecture`) ; après deux relectures, le décideur peut lever le verrou dans GRILLE.md (« **Relecture levée par :** »), réserves notées",
+          "waived_by": {
+            "step": "grille",
+            "field": "Relecture levée par",
+            "passes_of": "relecture",
+            "min_passes": 2
+          }
+        }
+      ],
+      "headings": [
+        "fuites",
+        "premisses semees",
+        "faits verifies",
+        "ce qui manque",
+        "corrections demandees"
+      ],
+      "next": "lancer la relecture du cadrage dans un sous-agent isolé (`council.py brief SEANCE relecture`) ; le tour ne part que sur « prêt »",
+      "counts_passes": true
     },
     {
       "id": "avis",
@@ -25,13 +111,23 @@
       "template": "AVIS.md",
       "brief": "avis.md",
       "role": "angle",
-      "after": ["cadrage"],
-      "reads": ["cadrage"],
-      "fields": ["Position", "Confiance"],
+      "after": [
+        "relecture"
+      ],
+      "reads": [
+        "cadrage"
+      ],
+      "fields": [
+        "Position",
+        "Confiance"
+      ],
       "tally_field": "Position",
       "require_text": [
-        {"pattern": "ind[ée]pendan", "severity": "warning",
-         "message": "pas de mention d'indépendance (l'avis doit être écrit sans lire l'autre)"}
+        {
+          "pattern": "ind[ée]pendan",
+          "severity": "warning",
+          "message": "pas de mention d'indépendance (l'avis doit être écrit sans lire l'autre)"
+        }
       ],
       "next": "lancer les deux angles en parallèle, chacun isolé (`council.py brief SEANCE avis <angle>`)"
     },
@@ -43,10 +139,21 @@
       "brief": "divergence.md",
       "role": "arbitre",
       "requires_arbiter": true,
-      "after": ["avis"],
-      "reads": ["cadrage", "avis"],
-      "fields": ["Arbitre"],
-      "headings": ["ce que la divergence revele"],
+      "after": [
+        "avis"
+      ],
+      "reads": [
+        "cadrage",
+        "grille",
+        "parties",
+        "avis"
+      ],
+      "fields": [
+        "Arbitre"
+      ],
+      "headings": [
+        "ce que la divergence revele"
+      ],
       "names_arbiter": true,
       "next": "lancer le lecteur de divergence dans un sous-agent isolé (`council.py brief SEANCE divergence`)"
     }

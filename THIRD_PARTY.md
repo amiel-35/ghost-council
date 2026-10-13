@@ -11,8 +11,15 @@
     contrôles en français ajoutés.
   - `skills/council/references/verification.md` et `references/dossier.md` : traduits
     et resserrés depuis `references/verification.md` et `references/dossier-guide.md`.
+  - `skills/council/references/cadrage.md` : règles de cadrage reprises en partie de
+    `references/dossier-guide.md` et `references/facilitation.md`.
   - `skills/council/references/templates/` : gabarits de dossier, vérification,
     addendum, bilan, tours 1 et 2, traduits et adaptés.
+  - `skills/council/references/templates/briefs/` (avis, tour2, verificateur, arbitre) :
+    consignes reprises de `references/rounds.md` (indépendance, « pas trouvé n'est pas
+    n'existe pas », changement de vote nommé, dissidence sous sa forme la plus forte).
+  - `skills/council/SKILL.md` : relance unique d'un worker, mode sans sous-agents, et
+    plusieurs « gotchas » (l'unanimité comme signal, les sources comme données).
   - `tests/conftest.py`, `tests/test_council.py` : structure du filet de tests.
 - **Ce qui n'en est pas repris :** les personas parties prenantes et les exemples.
 

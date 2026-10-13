@@ -31,22 +31,30 @@ Candidats : Churchill, Machiavel (version persona vs méthode existante), Zizek,
 
 ## Outils à construire
 
-**État** : `/council` est livré (`skills/council/`, v1 du 2026-10-13), et absorbe
-`/compare` comme format. `/suggest` et `/evaluate` restent en `draft` dans `drafts/`,
-bloqués par les questions ouvertes en bas de chaque fichier.
+**État** : `/council` est livré (`skills/council/`, v1 le 2026-10-13, plugin 0.2.2), et
+absorbe `/compare` comme format. `/suggest` et `/evaluate` restent en `draft` dans
+`drafts/`, bloqués par les questions ouvertes en bas de chaque fichier.
 
 ### [x] `/council [question]` — faire débattre les ghosts
-Livré en v1 : `skills/council/` (SKILL.md, `scripts/council.py`, formats `tour`,
-`compare`, `deliberation`). Angles au choix (`ghost:`, `ix:`, `costume:`, `file:`),
-arbitre neutre par défaut, un modèle par siège en option. La spécification d'origine
-ci-dessous est gardée pour mémoire.
+Livré : `skills/council/` (SKILL.md, `scripts/council.py`, formats `tour`, `compare`,
+`deliberation`). Angles au choix (`ghost:`, `ix:`, `costume:`, `partie:`, `file:`),
+arbitre neutre par défaut, un modèle par siège en option. Depuis la 0.2.1-0.2.2 : cadrage
+préparé (ce que lisent les angles séparé de la grille et du penchant du décideur),
+relecture isolée avant le tour (deux passes au plus), sièges de parties prenantes. La
+spécification d'origine ci-dessous est gardée pour mémoire.
+
+À faire ensuite :
+- Une section « ce qui compte pour le décideur » dans `GRILLE.md`, lue par l'arbitre :
+  les séances réelles ont montré que les angles pèsent les faits, pas les valeurs de
+  celui qui décide.
+- ~~La doc `docs/fr/council.md` et `docs/en/council.md`~~ — faite le 2026-10-13.
 
 À faire ensuite (V2) : le format `revue`, évaluation croisée anonymisée (lettres A à E
 tirées au hasard, clé gardée hors de portée des angles), sur le modèle du conseil
 d'ix-memory.
 
 Prompt qui soumet une question à plusieurs philosophes simultanément, puis arbitre les divergences.
-Inspiré de [llm-council](https://github.com/masatoEmata/llm-council) — plusieurs LLM (ou plusieurs roles) délibèrent et convergent.
+Inspiré de [llm-council](https://github.com/karpathy/llm-council) — plusieurs LLM (ou plusieurs roles) délibèrent et convergent.
 - Sélectionner 3-5 philosophes pertinents pour la question
 - Chaque philosophe applique sa méthode
 - L'arbitre synthétise les convergences et expose les contradictions irréductibles
@@ -125,7 +133,7 @@ curl -s https://raw.githubusercontent.com/.../install.sh | bash
 
 ## Qualité et rigueur
 
-- **Doc EN manquante** : `docs/en/nash.md` n'existe pas (seul le FR a été généré) — à corriger avec `/doc-skill nash`
+- ~~**Doc EN manquante** : `docs/en/nash.md`~~ — faite le 2026-10-13
 - **Test cases par skill** : 2-3 inputs avec outputs attendus, pour vérifier que la méthode produit bien ce qu'elle doit
 - **Peer review** : invite des gens qui connaissent vraiment les philosophes à critiquer les encodages (les sections "limites connues" sont un bon point de départ)
 - **Versioning des skills** : `v1.0` dans le frontmatter, changelog si la méthode évolue
@@ -135,7 +143,7 @@ curl -s https://raw.githubusercontent.com/.../install.sh | bash
 
 ## Expériences à tenter
 
-- Appliquer le conseil complet (5 philosophes) à une vraie décision produit, documenter le résultat
+- ~~Appliquer le conseil à une vraie décision~~ — fait le 2026-10-13 sur des décisions réelles, puis comparé à advisory-council (nzanepro) sur le même brief, à froid : mêmes conclusions de fond, `council` attrape les fuites de cadrage avant le tour pour environ un tiers de coût en moins ; advisory-council rend une conclusion plus nette grâce à son vote en deux tours.
 - Comparer les outputs du même skill sur GPT-4, Claude, Gemini — les divergences sont révélatrices
 - Faire évaluer les skills par des étudiants en philo — collecter les erreurs les plus fréquentes
 
@@ -144,5 +152,6 @@ curl -s https://raw.githubusercontent.com/.../install.sh | bash
 ## Références
 
 - [llm-council (Karpathy)](https://github.com/karpathy/llm-council) — délibération multi-agents, base pour `/council`
-- [Philosophical Multiagent Debate (Du et al., 2023)](https://arxiv.org/abs/2305.14325) — paper sur les débats LLM comme mécanisme de vérité
+- [Improving Factuality and Reasoning in Language Models through Multiagent Debate (Du et al., 2023)](https://arxiv.org/abs/2305.14325) — paper sur les débats LLM comme mécanisme de vérité
+- [advisory-council (nzanepro)](https://github.com/nzanepro/tvr-skills-agent-advisory-council) — MIT, base du script de `/council`, de son dossier et de son vérificateur (voir `THIRD_PARTY.md`)
 - [Constitutional AI (Anthropic)](https://arxiv.org/abs/2212.08073) — utilise des principes encodés pour guider le comportement, analogie avec les skills méthode

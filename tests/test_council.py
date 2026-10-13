@@ -6,6 +6,7 @@ Adapté de tests/test_council.py d'advisory-council 0.2.1 (nzanepro, MIT).
 from __future__ import annotations
 
 import json
+import re
 from pathlib import Path
 
 import pytest
@@ -23,6 +24,7 @@ from conftest import (
     init_session,
     make_ix,
     run_json,
+    strip_todo,
 )
 
 FORMATS = sorted(p.stem for p in (SKILL_DIR / "references" / "formats").glob("*.json"))
@@ -210,7 +212,7 @@ class TestInit:
     def test_tour_creates_stubs(self, run, tmp_path):
         folder = init_session(run, tmp_path)
         names = {p.name for p in folder.iterdir()}
-        assert names == {"council.json", "CADRAGE.md", "SYNTHESE.md",
+        assert names == {"council.json", "CADRAGE.md", "GRILLE.md", "RELECTURE.md", "SYNTHESE.md",
                          *(f"AVIS-{i}.md" for i in SEAT_IDS)}
         for name in names - {"council.json"}:
             assert "<!-- council:todo -->" in (folder / name).read_text("utf-8")
@@ -224,9 +226,10 @@ class TestInit:
         assert session["arbiter"]["ref"] == "arbitre:neutre"
         assert session["format"]["name"] == "tour"
 
-    def test_cadrage_lists_the_grid_and_the_arbiter(self, run, tmp_path):
+    def test_grille_lists_the_grid_and_the_arbiter(self, run, tmp_path):
         folder = init_session(run, tmp_path, arbiter="ghost:zeus@sonnet")
-        text = (folder / "CADRAGE.md").read_text("utf-8")
+        assert "ghost:popper" not in (folder / "CADRAGE.md").read_text("utf-8")
+        text = (folder / "GRILLE.md").read_text("utf-8")
         for ref in SEATS:
             assert f"`{ref}`" in text
         assert "`ghost:zeus`, modèle sonnet" in text
@@ -327,7 +330,7 @@ class TestBrief:
     def test_too_early(self, run, tmp_path):
         folder = init_session(run, tmp_path)
         code, data = run_json(run, ["brief", folder, "avis", "popper"])
-        assert code == 1 and "d'abord cadrage" in data["error"]
+        assert code == 1 and "d'abord relecture" in data["error"]
 
     def test_angle_brief_gives_path_reads_and_forbidden(self, run, tmp_path, ix_cache):
         folder = init_session(run, tmp_path)
@@ -350,6 +353,61 @@ class TestBrief:
         _, data = run_json(run, ["brief", "seance", "avis", "popper"])
         assert str(folder.resolve() / "CADRAGE.md") in data["brief"]
         assert data["target"] == str(folder.resolve() / "AVIS-popper.md")
+
+    def test_angle_brief_forbids_the_grid_and_the_review(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        fill_cadrage(folder)
+        _, data = run_json(run, ["brief", folder, "avis", "popper"])
+        forbidden = data["brief"].split("N'ouvre aucun de ces fichiers :")[1].split("\n")[0]
+        assert "GRILLE.md" in forbidden and "RELECTURE.md" in forbidden
+        assert "council.json" in forbidden
+        assert "Vérifie le cadrage" in data["brief"]
+
+    def test_review_asking_for_corrections_blocks_the_tour(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        fill_cadrage(folder, verdict="à corriger : le penchant fuit en §1")
+        code, data = run_json(run, ["brief", folder, "avis", "popper"])
+        assert code == 1 and "RELECTURE.md" in data["error"]
+        code, data = run_json(run, ["check", folder])
+        assert code == 3 and any("relecteur demande" in p["message"] for p in data["problems"])
+
+    def test_status_does_not_skip_a_review_asking_for_corrections(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        fill_cadrage(folder, verdict="à corriger")
+        _, data = run_json(run, ["status", folder])
+        review = next(s for s in data["steps"] if s["step"] == "relecture")
+        assert review["state"] == "à corriger"
+        assert data["next"].startswith("corriger avant de continuer")
+
+    def test_decision_owner_can_lift_the_review_lock(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        fill_cadrage(folder, verdict="à corriger")
+        grille = folder / "GRILLE.md"
+        grille.write_text(grille.read_text("utf-8").replace(
+            "**Relecture levée par :** non", "**Relecture levée par :** le décideur, réserves en §6"),
+            encoding="utf-8")
+        # Une seule relecture : le verrou ne se lève pas encore.
+        run_json(run, ["brief", folder, "relecture"])
+        code, data = run_json(run, ["brief", folder, "avis", "popper"])
+        assert code == 1 and "RELECTURE.md" in data["error"]
+        # Après la seconde, il se lève.
+        run_json(run, ["brief", folder, "relecture"])
+        code, data = run_json(run, ["brief", folder, "avis", "popper"])
+        assert code == 0, data
+        _, data = run_json(run, ["status", folder])
+        assert next(s for s in data["steps"] if s["step"] == "relecture")["state"] == "fait"
+
+    def test_review_can_be_rerun_after_corrections(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        fill_cadrage(folder, verdict="à corriger")
+        code, data = run_json(run, ["brief", folder, "relecture"])
+        assert code == 0 and "GRILLE.md" in data["brief"] and "CADRAGE.md" in data["brief"]
+
+    def test_unvalidated_grid_blocks_the_review(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        fill_cadrage(folder, validated="non, en attente", verdict=None)
+        code, data = run_json(run, ["brief", folder, "relecture"])
+        assert code == 1 and "GRILLE.md" in data["error"]
 
     def test_costume_brief_names_its_section(self, run, tmp_path):
         folder = init_session(run, tmp_path)
@@ -393,10 +451,13 @@ class TestBrief:
         for seat_id in SEAT_IDS:
             assert f"AVIS-{seat_id}.md" in data["brief"]
         assert "zeus/SKILL.md" in data["brief"] and "à l'arbitrage" in data["brief"]
+        assert str(folder.resolve() / "GRILLE.md") in data["brief"]
+        assert "penché pour l'inverse" in data["brief"]
 
     def test_every_brief_of_a_deliberation_fills(self, run, tmp_path):
         folder = build_deliberation(run, tmp_path)
-        for argv in (["tour1", "popper"], ["verification"], ["tour2", "humain"], ["synthese"]):
+        for argv in (["relecture"], ["tour1", "popper"], ["verification"], ["tour2", "humain"],
+                     ["synthese"]):
             code, data = run_json(run, ["brief", folder, *argv])
             assert code == 0, data
             assert "{{" not in data["brief"]
@@ -476,7 +537,8 @@ class TestCheck:
     def test_final_on_unfinished_session(self, run, tmp_path):
         folder = init_session(run, tmp_path)
         code, data = run_json(run, ["check", folder, "--final"])
-        assert code == 3 and set(data["incomplete"]) == {"cadrage", "avis", "synthese"}
+        assert code == 3 and set(data["incomplete"]) == {"cadrage", "grille", "relecture", "avis",
+                                                       "synthese"}
 
     def test_not_final_on_fresh_session_is_ok(self, run, tmp_path):
         folder = init_session(run, tmp_path)
@@ -594,3 +656,191 @@ def test_text_output_and_exit_codes(run, tmp_path):
     assert code == 0 and out.strip().endswith("ok")
     code, out = run(["status", folder])
     assert "format tour" in out and "terminé" in out
+
+
+def test_deliberation_reviews_the_dossier_before_round_1(run, tmp_path):
+    folder = init_session(run, tmp_path, fmt="deliberation")
+    fill(folder / "CADRAGE.md", Question="Faut-il passer en freemium ?")
+    fill(folder / "GRILLE.md", **{"Grille_validée": "oui"})
+    code, data = run_json(run, ["brief", folder, "relecture"])
+    assert code == 1 and "d'abord dossier" in data["error"]
+    fill(folder / "DOSSIER.md")
+    code, data = run_json(run, ["brief", folder, "relecture"])
+    assert code == 0 and "DOSSIER.md" in data["brief"]
+    code, data = run_json(run, ["brief", folder, "tour1", "popper"])
+    assert code == 1 and "d'abord relecture" in data["error"]
+
+
+# --------------------------------------------------------------------------- parties prenantes
+
+PARTY_SEATS = ["partie:client", "partie:equipe", "ghost:pascal"]
+
+
+def fill_parties(folder):
+    path = folder / "PARTIES.md"
+    text = strip_todo(path.read_text("utf-8"))
+    text = re.sub(r"<[^<>\n]+>", "rempli", text)
+    path.write_text(text, encoding="utf-8")
+
+
+class TestParties:
+    def test_resolve_partie(self, council):
+        angle = council.resolve("partie:client")
+        assert angle["kind"] == "partie" and angle["section"] == "client"
+        assert angle["path"] == "PARTIES.md" and angle["label"] == "Client"
+
+    def test_partie_needs_a_kebab_id(self, council):
+        with pytest.raises(council.CouncilError, match="kebab-case"):
+            council.resolve("partie:Le Client")
+
+    def test_bare_name_never_resolves_to_a_partie(self, council):
+        with pytest.raises(council.CouncilError):
+            council.resolve("client")
+
+    def test_init_writes_one_card_per_partie(self, run, tmp_path):
+        folder = init_session(run, tmp_path, seats=PARTY_SEATS)
+        text = (folder / "PARTIES.md").read_text("utf-8")
+        assert "## client" in text and "## equipe" in text and "## pascal" not in text
+
+    def test_no_parties_file_without_partie_seats(self, run, tmp_path):
+        folder = init_session(run, tmp_path)
+        assert not (folder / "PARTIES.md").exists()
+        _, data = run_json(run, ["status", folder])
+        assert "parties" not in [s["step"] for s in data["steps"]]
+
+    def test_review_waits_for_the_cards(self, run, tmp_path):
+        folder = init_session(run, tmp_path, seats=PARTY_SEATS)
+        fill_cadrage(folder, verdict=None)
+        code, data = run_json(run, ["brief", folder, "relecture"])
+        assert code == 1 and "d'abord parties" in data["error"]
+        fill_parties(folder)
+        code, data = run_json(run, ["brief", folder, "relecture"])
+        assert code == 0 and "PARTIES.md" in data["brief"]
+
+    def test_unfilled_card_is_an_error(self, run, tmp_path):
+        folder = init_session(run, tmp_path, seats=PARTY_SEATS)
+        path = folder / "PARTIES.md"
+        path.write_text(strip_todo(path.read_text("utf-8")), encoding="utf-8")
+        code, data = run_json(run, ["check", folder])
+        assert code == 3
+        assert any("fiche « ## client » n'est pas remplie" in p["message"]
+                   for p in data["problems"])
+
+    def test_partie_brief_reads_only_its_card(self, run, tmp_path):
+        folder = init_session(run, tmp_path, seats=PARTY_SEATS)
+        fill_parties(folder)
+        fill_cadrage(folder)
+        code, data = run_json(run, ["brief", folder, "avis", "client"])
+        assert code == 0
+        assert f"{folder.resolve() / 'PARTIES.md'}, uniquement la fiche « ## client »" \
+            in data["brief"]
+        assert "PARTIES.md (sauf ta fiche)" in data["brief"]
+
+    def test_other_angles_cannot_open_the_cards(self, run, tmp_path):
+        folder = init_session(run, tmp_path, seats=PARTY_SEATS)
+        fill_parties(folder)
+        fill_cadrage(folder)
+        _, data = run_json(run, ["brief", folder, "avis", "pascal"])
+        forbidden = data["brief"].split("N'ouvre aucun de ces fichiers :")[1].split("\n")[0]
+        assert "PARTIES.md" in forbidden and "sauf ta fiche" not in forbidden
+
+    def test_full_tour_with_parties_passes_final(self, run, tmp_path):
+        folder = init_session(run, tmp_path, seats=PARTY_SEATS, arbiter="adversarial")
+        fill_parties(folder)
+        fill_cadrage(folder)
+        for seat_id in ("client", "equipe", "pascal"):
+            fill_avis(folder, seat_id)
+        fill(folder / "SYNTHESE.md")
+        code, data = run_json(run, ["brief", folder, "synthese"])
+        assert "PARTIES.md" in data["brief"]
+        code, data = run_json(run, ["check", folder, "--final"])
+        assert code == 0, data["problems"]
+
+
+
+# --------------------------------------------------------------------------- correctifs de relecture
+
+def test_unvalidated_grid_blocks_the_tour_even_after_a_ready_review(run, tmp_path):
+    folder = init_session(run, tmp_path)
+    fill_cadrage(folder, validated="non, en attente")
+    code, data = run_json(run, ["brief", folder, "avis", "popper"])
+    assert code == 1 and "GRILLE.md" in data["error"]
+
+
+def test_brief_resolves_again_a_vanished_method(run, tmp_path, ix_cache):
+    folder = init_session(run, tmp_path)
+    fill_cadrage(folder)
+    session = json.loads((folder / "council.json").read_text("utf-8"))
+    old = next(s for s in session["seats"] if s["id"] == "dixieme-homme")["path"]
+    assert "/3.10.0/" in old
+    import shutil
+    shutil.rmtree(ix_cache / "3.10.0")
+    code, data = run_json(run, ["brief", folder, "avis", "dixieme-homme"])
+    assert code == 0 and "/3.9.0/" in data["brief"]
+    shutil.rmtree(ix_cache / "3.9.0")
+    code, data = run_json(run, ["brief", folder, "avis", "dixieme-homme"])
+    assert code == 1 and "a disparu" in data["error"]
+
+
+def test_init_with_a_missing_template_writes_nothing(run, tmp_path):
+    fmt = json.loads((SKILL_DIR / "references" / "formats" / "tour.json").read_text("utf-8"))
+    fmt["steps"][0]["template"] = "ABSENT.md"
+    path = tmp_path / "casse.json"
+    path.write_text(json.dumps(fmt), encoding="utf-8")
+    code, data = run_json(run, ["init", tmp_path / "s", "--title", "x", "--seat", "popper",
+                                "--seat", "kant", "--format", path])
+    assert code == 1 and "ABSENT.md" in data["error"]
+    assert not (tmp_path / "s").exists()
+
+
+def test_a_partie_cannot_arbitrate(run, tmp_path):
+    code, data = run_json(run, ["init", tmp_path / "s", "--title", "x", "--seat", "popper",
+                                "--seat", "kant", "--arbiter", "partie:client"])
+    assert code == 1 and "n'arbitre pas" in data["error"]
+
+
+def test_verifier_may_read_the_framing(run, tmp_path):
+    folder = build_deliberation(run, tmp_path)
+    _, data = run_json(run, ["brief", folder, "verification"])
+    forbidden = data["brief"].split("N'ouvre pas :")[1].split("\n")[0]
+    assert "CADRAGE.md" not in forbidden
+    assert str(folder.resolve() / "CADRAGE.md") in data["brief"]
+
+
+def test_bilan_needs_a_table_row_per_seat(run, tmp_path):
+    folder = build_deliberation(run, tmp_path)
+    path = folder / "BILAN-TOUR1.md"
+    text = path.read_text("utf-8").replace("| humain |", "| ? |") + "\nSeul l'humain décide.\n"
+    path.write_text(text, encoding="utf-8")
+    code, data = run_json(run, ["check", folder])
+    assert code == 3 and any("humain" in p["message"] for p in data["problems"])
+
+
+def test_vote_changed_with_too_short_a_reason(run, tmp_path):
+    folder = build_deliberation(run, tmp_path)
+    fill_vote(folder, "popper", changed="oui, je change")
+    code, data = run_json(run, ["check", folder])
+    assert code == 3 and any("sans nommer" in p["message"] for p in data["problems"])
+
+
+def test_ambiguous_vote_is_not_counted_for_an_option(run, tmp_path):
+    folder = build_deliberation(run, tmp_path)
+    fill_vote(folder, "popper", vote="A ou B, indifférent")
+    _, data = run_json(run, ["tally", folder, "--step", "tour2"])
+    assert any(t["option"] == "Ambigu" for t in data["totals"])
+
+
+def test_at_sign_in_a_file_path(council):
+    assert council.split_model("file:/tmp/kant@v2") == ("file:/tmp/kant@v2", None)
+    assert council.split_model("file:/tmp/kant@opus") == ("file:/tmp/kant", "opus")
+
+
+def test_ghost_name_is_case_exact(council):
+    with pytest.raises(council.CouncilError):
+        council.resolve("ghost:Popper")
+
+
+def test_init_refuses_a_new_date_on_an_existing_session(run, tmp_path):
+    folder = init_session(run, tmp_path)
+    code, data = run_json(run, ["init", folder, "--date", "2020-01-01"])
+    assert code == 1 and "existe déjà" in data["error"]

@@ -19,13 +19,13 @@ de proche du problème. D'où la consigne en tête (« vérifiez-le ») et le v�
 | Section | Ce qui y va | À surveiller |
 |---|---|---|
 | 0. La question en une ligne | la décision, posée neutre | pas de verdict, pas de « c'est réglé » |
-| 1. Options | toutes les options vivantes, dont **ne rien faire**, avec réversibilité et coût approximatif | une option absente parce que l'auteur ne l'aime pas |
+| 1. Options | toutes les options vivantes, dont **ne rien faire**, avec ce qu'elles engagent et leur coût approximatif | une option absente parce que l'auteur ne l'aime pas |
 | 2. Domaine | qui est concerné, segments, concurrents par type, tailles avec source | une taille de marché tirée d'un seul rapport sans méthode |
 | 3. But, contraintes, réussite | le critère de réussite, le budget, le délai, les lignes rouges, qui décide et quand | une échéance écrite comme une pression plutôt qu'un fait |
 | 4. Faits | numérotés, chacun avec source et date | bases mélangées, chiffres périmés, un point isolé présenté comme une tendance |
 | 5. Estimations et hypothèses | numérotées, chacune avec sa méthode et ce qui la réfuterait | une estimation promue en fait à force d'être répétée |
 | 6. Ce qu'on ne sait pas | les trous, et où chacun a été cherché | « aucune donnée » quand personne n'a cherché |
-| 7. Positions déjà prises | l'inclination du décideur, posée comme une position à tester | une inclination écrite comme une prémisse |
+| 7. Ce qui est déjà décidé ou écarté | les décisions déjà prises par d'autres, comme des faits sourcés | le penchant du décideur glissé ici : il reste dans `GRILLE.md` |
 | 8. Ce qu'on demande au conseil | trois à six questions numérotées, dont l'étape la moins chère qui trancherait | des questions qui présupposent la réponse |
 
 Assez court pour se lire en dix minutes : deux à quatre pages. Le détail va dans les
@@ -37,10 +37,11 @@ sources liées.
    déployer l'offre payante ? ».
 2. **Pas d'urgence.** Une échéance est un fait de la section 3 ; l'impatience du
    décideur n'en est pas un.
-3. **L'inclination du décideur est une position à tester.** Section 7, dans ses
-   mots. Si le dossier existe parce que le décideur conteste un verdict précédent,
-   le dire et citer son objection : c'est souvent ce qu'il y a de plus utile à
-   examiner.
+3. **Le penchant du décideur reste hors du dossier.** Il va dans `GRILLE.md` §4, que
+   les angles ne lisent pas ; le relecteur vérifie qu'il ne fuit pas, l'arbitre s'en
+   sert pour tester sa synthèse. Si le dossier existe parce que le décideur conteste
+   un verdict précédent, c'est la question elle-même qui porte l'objection (« la
+   conclusion X tient-elle face à Y ? »), pas une section qui dit ce qu'il espère.
 4. **Aucune position d'angle.** Même d'une séance précédente : les résultats
    antérieurs entrent comme des faits sourcés, pas comme des votes.
 5. **Une base par tableau**, nommée. Sinon le tableau trompe.
@@ -53,5 +54,5 @@ sources liées.
 Une nouvelle question au même conseil ouvre une nouvelle séance. On y reporte les
 faits qui ont survécu, les corrections et les questions ouvertes de la synthèse,
 jamais la position d'un angle comme prémisse. Quand le décideur conteste la
-synthèse, c'est une bonne raison d'ouvrir une séance de suivi : le verdict contesté
-y entre comme une position à tester.
+synthèse, c'est une bonne raison d'ouvrir une séance de suivi : la question y teste
+le verdict contesté face à son objection.

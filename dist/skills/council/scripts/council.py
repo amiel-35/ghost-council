@@ -69,11 +69,12 @@ from pathlib import Path
 TODO_MARKER = "<!-- council:todo -->"
 SCHEMA_VERSION = 1
 SEAT_ID_RE = re.compile(r"^[a-z0-9]+(?:-[a-z0-9]+)*$")
-RESERVED_IDS = {"cadrage", "dossier", "verification", "bilan", "synthese", "divergence",
-                "addendum", "council", "arbitre"}
+RESERVED_IDS = {"cadrage", "grille", "relecture", "dossier", "verification", "bilan",
+                "synthese", "divergence", "addendum", "council", "arbitre"}
 MODELS = ("opus", "sonnet", "haiku", "codex", "gemini")
 EXTERNAL_MODELS = ("codex", "gemini")
-KINDS = ("ghost", "ix", "costume", "arbitre", "file")
+KINDS = ("ghost", "ix", "costume", "partie", "arbitre", "file")
+PARTIES_FILE = "PARTIES.md"
 SEAT_BARE_ORDER = ("ghost", "costume", "ix")
 ARBITER_BARE_ORDER = ("arbitre", "ghost", "ix")
 NO_ARBITER = "aucun"
@@ -191,7 +192,7 @@ def try_resolve(kind: str, name: str) -> tuple:
         if name == "council":
             return None, "council ne peut pas siéger dans son propre conseil"
         path = ghosts_dir() / name / "SKILL.md"
-        found = path.is_file()
+        found = path.is_file() and name in os.listdir(ghosts_dir())
         return ({"path": str(path), "section": None, "label": first_heading(path) or name}
                 if found else None), str(path)
     if kind == "ix":
@@ -211,6 +212,12 @@ def try_resolve(kind: str, name: str) -> tuple:
         heading = sections(path).get(slugify(name))
         return ({"path": str(path), "section": heading, "label": heading}
                 if heading else None), f"{path} (sections ##)"
+    if kind == "partie":
+        # Une partie prenante n'a pas de bibliothèque : sa fiche s'écrit dans la séance.
+        if not SEAT_ID_RE.match(name):
+            return None, f"{name!r} n'est pas un id en kebab-case (ex. partie:client)"
+        return {"path": PARTIES_FILE, "section": name,
+                "label": name.replace("-", " ").capitalize()}, PARTIES_FILE
     if kind == "file":
         path = Path(name).expanduser()
         if path.is_dir():
@@ -247,7 +254,8 @@ def resolve(ref: str, bare_order=SEAT_BARE_ORDER) -> dict:
 def split_model(spec: str) -> tuple:
     """`ix:dixieme-homme@opus` -> ("ix:dixieme-homme", "opus")."""
     head, sep, tail = spec.rpartition("@")
-    if not sep or "/" in tail:
+    if not sep or "/" in tail or (spec.strip().startswith("file:")
+                                  and tail.strip().lower() not in MODELS):
         return spec.strip(), None
     model = tail.strip().lower()
     if model not in MODELS:
@@ -280,7 +288,11 @@ def parse_arbiter(spec: str | None, fmt: dict) -> dict | None:
                                "adversarial, ghost:zeus, ghost:nash, ghost:aristote...")
         return None
     ref, model = split_model(spec)
-    return {**resolve(ref, ARBITER_BARE_ORDER), "model": model}
+    arbiter = resolve(ref, ARBITER_BARE_ORDER)
+    if arbiter["kind"] == "partie":
+        raise CouncilError(f"{ref} : une partie prenante siège, elle n'arbitre pas ; choisir "
+                           "neutre, adversarial ou une méthode (ghost:, ix:, file:)")
+    return {**arbiter, "model": model}
 
 
 # ----------------------------------------------------------------------------- formats
@@ -288,7 +300,8 @@ def parse_arbiter(spec: str | None, fmt: dict) -> dict | None:
 STEP_KEYS = {"id", "label", "file", "template", "role", "per_seat", "repeatable", "optional",
              "requires_arbiter", "brief", "after", "reads", "fields", "expect", "require_text",
              "require_any", "forbid_fields", "justify", "headings", "mentions_all_seats",
-             "names_arbiter", "tally_field", "vote", "next"}
+             "names_arbiter", "tally_field", "vote", "next", "requires_parties",
+             "party_cards", "counts_passes"}
 ROLES = {"organisateur", "angle", "arbitre", "verificateur"}
 
 
@@ -321,6 +334,11 @@ def validate_format(fmt: dict) -> list:
             for dep in step.get(key, []):
                 if dep not in ids:
                     errors.append(f"étape {sid} : {key} cite l'étape inconnue {dep!r}")
+        if step.get("template") and not (TEMPLATE_DIR / step["template"]).is_file():
+            errors.append(f"étape {sid} : gabarit {step['template']!r} absent de "
+                          f"{TEMPLATE_DIR}")
+        if step.get("brief") and not (BRIEF_DIR / step["brief"]).is_file():
+            errors.append(f"étape {sid} : brief {step['brief']!r} absent de {BRIEF_DIR}")
     if len(set(ids)) != len(ids):
         errors.append("deux étapes portent le même id")
     return errors
@@ -364,10 +382,15 @@ def load_session(folder: Path) -> dict:
     return session
 
 
+def has_parties(session: dict) -> bool:
+    return any(s.get("kind") == "partie" for s in session["seats"])
+
+
 def active_steps(session: dict) -> list:
     has_arbiter = session.get("arbiter") is not None
     return [s for s in session["format"]["steps"]
-            if not (s.get("requires_arbiter") and not has_arbiter)]
+            if not (s.get("requires_arbiter") and not has_arbiter)
+            and not (s.get("requires_parties") and not has_parties(session))]
 
 
 def get_step(session: dict, step_id: str) -> dict:
@@ -437,7 +460,10 @@ def common_values(folder: Path, session: dict) -> dict:
             "arbiter_ref": arbiter["ref"] if arbiter else NO_ARBITER,
             "arbiter_model": (arbiter.get("model") or "défaut") if arbiter else "-",
             "seat_rows": "\n".join(f"| {s['id']} | | | |" for s in session["seats"]),
-            "seat_rows_unique": "\n".join(f"| {s['id']} | |" for s in session["seats"])}
+            "seat_rows_unique": "\n".join(f"| {s['id']} | |" for s in session["seats"]),
+            "party_cards": "\n".join(
+                fill(load_text(TEMPLATE_DIR / "PARTIE.md", "gabarit"), {"seat_id": s["id"]})
+                for s in session["seats"] if s.get("kind") == "partie").rstrip("\n")}
 
 
 def seat_values(common: dict, seat: dict) -> dict:
@@ -453,7 +479,7 @@ def cmd_init(args) -> dict:
     created, kept, warnings = [], [], []
 
     if session_path.is_file():
-        if args.seat or args.title or args.arbiter or args.format:
+        if args.seat or args.title or args.arbiter or args.format or args.date:
             raise CouncilError(f"{session_path} existe déjà ; le modifier à la main, ou relancer "
                                "init avec le seul dossier pour recréer les gabarits manquants")
         session = load_session(folder)
@@ -531,6 +557,16 @@ def cmd_status(args) -> dict:
     session = load_session(folder)
     report = step_report(folder, session)
     steps = {s["id"]: s for s in active_steps(session)}
+    by_id = {e["step"]: e for e in report}
+    for entry in report:
+        # Un fichier écrit mais refusé par ses contrôles (relecture « à corriger », grille non
+        # validée) n'est pas une étape faite : la suite ne doit pas la proposer.
+        if entry["state"] == "fait":
+            errors = [p["message"] for p in step_problems(folder, session, steps[entry["step"]],
+                                                          by_id) if p["severity"] == "error"]
+            if errors:
+                entry["state"] = "à corriger"
+                entry["problems"] = errors
     next_step = "terminé ; lancer `council.py check SEANCE --final` puis restituer"
     for entry in report:
         if entry.get("optional"):
@@ -538,6 +574,9 @@ def cmd_status(args) -> dict:
                 next_step = steps[entry["step"]]["next"]
                 break
             continue
+        if entry["state"] == "à corriger":
+            next_step = f"corriger avant de continuer : {'; '.join(entry['problems'])}"
+            break
         if entry["state"] != "fait":
             next_step = steps[entry["step"]]["next"]
             if entry.get("pending"):
@@ -575,7 +614,11 @@ LAUNCH = {
 }
 
 
-def method_line(angle: dict) -> str:
+def method_line(angle: dict, folder: Path) -> str:
+    if angle.get("kind") == "partie":
+        return (f"lis {folder / PARTIES_FILE}, uniquement la fiche « ## {angle['section']} » : "
+                "tu raisonnes depuis la position de cette partie, son mandat, ce qu'elle gagne "
+                "ou perd, ses priorités et ses angles morts, et seulement elle. Tu tiens ce rôle")
     if angle.get("section"):
         return (f"lis {angle['path']}, uniquement la section « ## {angle['section']} », "
                 "et applique-la")
@@ -601,6 +644,8 @@ def read_list(folder: Path, session: dict, step: dict) -> tuple:
                  for s in active_steps(session) if s["id"] not in allowed and s is not step]
     if step.get("per_seat"):
         forbidden.insert(0, step["file"].replace("{seat}", "*") + " (sauf le tien)")
+    if step.get("role") == "angle":
+        forbidden.append("council.json")
     return reads, forbidden
 
 
@@ -616,6 +661,21 @@ def cmd_brief(args) -> dict:
     if waiting:
         raise CouncilError(f"trop tôt pour {step['id']} : d'abord {', '.join(waiting)} "
                            "(voir `council.py status`)")
+    steps = {s["id"]: s for s in active_steps(session)}
+    # Toute la chaîne en amont, pas seulement l'étape précédente : une grille non validée
+    # bloque le tour même si la relecture, entre les deux, est passée.
+    upstream, todo = [], list(step.get("after", []))
+    while todo:
+        dep = todo.pop()
+        if dep in steps and dep not in upstream:
+            upstream.append(dep)
+            todo += steps[dep].get("after", [])
+    blocking = [p for dep in upstream
+                for p in step_problems(folder, session, steps[dep], report)
+                if p["severity"] == "error"]
+    if blocking:
+        raise CouncilError(f"trop tôt pour {step['id']} : "
+                           + "; ".join(f"{p['file']} : {p['message']}" for p in blocking))
 
     if step.get("per_seat"):
         if not args.seat:
@@ -634,9 +694,27 @@ def cmd_brief(args) -> dict:
         angle = None
         target = step["file"]
 
+    if angle and angle.get("kind") != "partie" and not Path(angle["path"]).is_file():
+        # Le cache d'un plugin change de dossier à chaque mise à jour : on résout à nouveau.
+        try:
+            fresh = resolve(angle["ref"], ARBITER_BARE_ORDER if step["role"] == "arbitre"
+                            else SEAT_BARE_ORDER)
+        except CouncilError as exc:
+            raise CouncilError(f"la méthode de {angle['ref']} a disparu ({angle['path']}) : "
+                               f"{exc}") from None
+        angle["path"] = fresh["path"]
+        write_lf(folder / "council.json", json.dumps(session, indent=2, ensure_ascii=False) + "\n")
+
+    if step.get("counts_passes"):
+        passes = session.setdefault("passes", {})
+        passes[step["id"]] = passes.get(step["id"], 0) + 1
+        write_lf(folder / "council.json", json.dumps(session, indent=2, ensure_ascii=False) + "\n")
+
     model = angle.get("model") if angle else None
     path = folder / target
     reads, forbidden = read_list(folder, session, step)
+    if angle and angle.get("kind") == "partie":
+        forbidden = [f"{f} (sauf ta fiche)" if f == PARTIES_FILE else f for f in forbidden]
     if model in EXTERNAL_MODELS:
         stub = path.read_text(encoding="utf-8") if path.is_file() else ""
         write = ("Tu ne peux pas écrire de fichier. Rends sur la sortie standard, et rien "
@@ -654,7 +732,7 @@ def cmd_brief(args) -> dict:
               "write": write,
               "angle_label": angle["label"] if angle else "",
               "angle_ref": angle["ref"] if angle else "",
-              "method": method_line(angle) if angle else ""}
+              "method": method_line(angle, folder) if angle else ""}
     text = fill(load_text(BRIEF_DIR / step["brief"], "brief"), values).rstrip("\n") + "\n"
     leftover = re.findall(r"\{\{[a-z_]+\}\}", text)
     if leftover:
@@ -722,6 +800,9 @@ def cmd_tally(args) -> dict:
         if step.get("vote"):
             match = re.match(r"^(?:[Oo]ption\s+)?\**([A-Z])\b", value)
             row["option"] = match.group(1) if match else "Autre"
+            if match and re.search(r"\b(?:ou|or|et)\s+(?:l'option\s+|option\s+)?[A-Z]\b",
+                                   value[match.end():]):
+                row["option"] = "Ambigu"
             justify = step.get("justify", {})
             row["changed"] = read_field(text, justify.get("field", "")) or "?" if justify else "-"
         rows.append(row)
@@ -754,9 +835,24 @@ def cmd_tally(args) -> dict:
 
 # ----------------------------------------------------------------------------- check
 
-def cmd_check(args) -> dict:
-    folder = Path(args.folder)
-    session = load_session(folder)
+def waived(folder: Path, session: dict, rule: dict | None) -> bool:
+    """Vrai si le décideur a levé ce contrôle par une ligne d'un autre fichier de la séance."""
+    if not rule:
+        return False
+    steps = {s["id"]: s for s in active_steps(session)}
+    other = steps.get(rule["step"])
+    path = folder / other["file"] if other else None
+    if not path or file_state(path) != "fait":
+        return False
+    value = read_field(path.read_text(encoding="utf-8"), rule["field"])
+    if not value or fold(value).startswith("non"):
+        return False
+    passes = session.get("passes", {}).get(rule.get("passes_of", ""), 0)
+    return passes >= rule.get("min_passes", 0)
+
+
+def step_problems(folder: Path, session: dict, step: dict, report: dict) -> list:
+    """Les problèmes d'une étape : ordre des étapes et contenu de ses fichiers écrits."""
     problems = []
     seat_ids = [s["id"] for s in session["seats"]]
     arbiter = session.get("arbiter")
@@ -764,75 +860,98 @@ def cmd_check(args) -> dict:
     def problem(severity, where, message):
         problems.append({"severity": severity, "file": where, "message": message})
 
+    entry = report[step["id"]]
+    done_files = [n for n in entry["files"] if file_state(folder / n) == "fait"]
+
+    if done_files:
+        for dep in step.get("after", []):
+            dep_entry = report.get(dep)
+            if dep_entry and not dep_entry.get("optional") and dep_entry["state"] != "fait":
+                pending = dep_entry.get("pending")
+                problem("error", done_files[0],
+                        f"écrit avant que l'étape {dep} soit complète"
+                        + (f" (en attente : {', '.join(pending)})" if pending else ""))
+
+    for name in done_files:
+        text = (folder / name).read_text(encoding="utf-8")
+        for field in step.get("fields", []):
+            if read_field(text, field) is None:
+                problem("error", name, f"ligne **{field} :** absente ou non remplie")
+        for rule in step.get("expect", []):
+            value = read_field(text, rule["field"])
+            if value is not None and not fold(value).startswith(fold(rule["starts_with"])) \
+                    and not waived(folder, session, rule.get("waived_by")):
+                problem(rule.get("severity", "error"), name, rule["message"])
+        for rule in step.get("require_text", []):
+            if not re.search(rule["pattern"], text, re.MULTILINE | re.IGNORECASE):
+                problem(rule.get("severity", "warning"), name, rule["message"])
+        rule = step.get("require_any")
+        if rule and not any(v in text for v in rule["values"]):
+            problem("error", name, rule["message"])
+        for field in step.get("forbid_fields", []):
+            if has_field_line(text, field):
+                problem("error", name, f"porte une ligne **{field} :** ; ce fichier ne "
+                                       "contient que des corrections, jamais un avis ou un vote")
+        rule = step.get("justify")
+        if rule:
+            value = read_field(text, rule["field"]) or ""
+            reason = value.strip()[len(rule["if_starts"]):].strip(" :,;-.")
+            if fold(value).startswith(fold(rule["if_starts"])) and \
+                    len(reason.split()) < rule.get("min_words", 3):
+                problem("error", name, rule["message"])
+        if step.get("headings"):
+            found = [fold(h) for h in re.findall(r"^##\s+(?:\d+\.\s*)?(.+)$", text,
+                                                 re.MULTILINE)]
+            for wanted in step["headings"]:
+                if not any(fold(wanted) in h for h in found):
+                    problem("error", name, f"pas de section « {wanted} »")
+        if step.get("mentions_all_seats"):
+            absent = [i for i in seat_ids
+                      if not re.search(rf"^\|\s*{re.escape(i)}\s*\|", text, re.MULTILINE)]
+            if absent:
+                problem("error", name, f"angles sans ligne de tableau : {', '.join(absent)}")
+        if step.get("party_cards"):
+            cards = re.split(r"^##\s+", text, flags=re.MULTILINE)
+            by_id = {c.split("\n", 1)[0].strip(): c for c in cards[1:]}
+            for seat in session["seats"]:
+                if seat.get("kind") != "partie":
+                    continue
+                card = by_id.get(seat["id"])
+                if card is None:
+                    problem("error", name, f"pas de fiche « ## {seat['id']} »")
+                elif PLACEHOLDER_RE.search(card):
+                    problem("error", name, f"la fiche « ## {seat['id']} » n'est pas remplie")
+        if step.get("names_arbiter") and arbiter:
+            named = read_field(text, "Arbitre") or ""
+            tokens = {fold(arbiter["label"]), fold(arbiter["ref"].split(":", 1)[1])}
+            if named and not any(t in fold(named) for t in tokens):
+                problem("warning", name, f"la ligne **Arbitre :** ne nomme pas l'arbitre de "
+                                         f"la séance ({arbiter['ref']})")
+    return problems
+
+
+def cmd_check(args) -> dict:
+    folder = Path(args.folder)
+    session = load_session(folder)
+    problems = []
     report = {e["step"]: e for e in step_report(folder, session)}
 
     for path in sorted(folder.glob("*.md")):
         if file_state(path) == "fait":
             leftover = PLACEHOLDER_RE.findall(path.read_text(encoding="utf-8"))
             if leftover:
-                problem("warning", path.name, f"{len(leftover)} champ(s) de gabarit non "
-                                              f"rempli(s), le premier : {leftover[0]}")
+                problems.append({"severity": "warning", "file": path.name,
+                                 "message": f"{len(leftover)} champ(s) de gabarit non rempli(s), "
+                                            f"le premier : {leftover[0]}"})
 
     for step in active_steps(session):
-        entry = report[step["id"]]
-        done_files = [n for n in entry["files"] if file_state(folder / n) == "fait"]
-
-        if done_files:
-            for dep in step.get("after", []):
-                dep_entry = report.get(dep)
-                if dep_entry and not dep_entry.get("optional") and dep_entry["state"] != "fait":
-                    pending = dep_entry.get("pending")
-                    problem("error", done_files[0],
-                            f"écrit avant que l'étape {dep} soit complète"
-                            + (f" (en attente : {', '.join(pending)})" if pending else ""))
-
-        for name in done_files:
-            text = (folder / name).read_text(encoding="utf-8")
-            for field in step.get("fields", []):
-                if read_field(text, field) is None:
-                    problem("error", name, f"ligne **{field} :** absente ou non remplie")
-            for rule in step.get("expect", []):
-                value = read_field(text, rule["field"])
-                if value is not None and not fold(value).startswith(fold(rule["starts_with"])):
-                    problem(rule.get("severity", "error"), name, rule["message"])
-            for rule in step.get("require_text", []):
-                if not re.search(rule["pattern"], text, re.MULTILINE | re.IGNORECASE):
-                    problem(rule.get("severity", "warning"), name, rule["message"])
-            rule = step.get("require_any")
-            if rule and not any(v in text for v in rule["values"]):
-                problem("error", name, rule["message"])
-            for field in step.get("forbid_fields", []):
-                if has_field_line(text, field):
-                    problem("error", name, f"porte une ligne **{field} :** ; ce fichier ne "
-                                           "contient que des corrections, jamais un avis ou un vote")
-            rule = step.get("justify")
-            if rule:
-                value = read_field(text, rule["field"]) or ""
-                if fold(value).startswith(fold(rule["if_starts"])) and \
-                        len(value.strip(" :-.").split()) < rule.get("min_words", 3):
-                    problem("error", name, rule["message"])
-            if step.get("headings"):
-                found = [fold(h) for h in re.findall(r"^##\s+(?:\d+\.\s*)?(.+)$", text,
-                                                     re.MULTILINE)]
-                for wanted in step["headings"]:
-                    if not any(fold(wanted) in h for h in found):
-                        problem("error", name, f"pas de section « {wanted} »")
-            if step.get("mentions_all_seats"):
-                absent = [i for i in seat_ids if not re.search(rf"\b{re.escape(i)}\b", text)]
-                if absent:
-                    problem("error", name, f"angles absents : {', '.join(absent)}")
-            if step.get("names_arbiter") and arbiter:
-                named = read_field(text, "Arbitre") or ""
-                tokens = {fold(arbiter["label"]), fold(arbiter["ref"].split(":", 1)[1])}
-                if named and not any(t in fold(named) for t in tokens):
-                    problem("warning", name, f"la ligne **Arbitre :** ne nomme pas l'arbitre de "
-                                             f"la séance ({arbiter['ref']})")
+        problems += step_problems(folder, session, step, report)
 
     incomplete = [sid for sid, e in report.items()
                   if not e.get("optional") and e["state"] != "fait"]
     if args.final:
         for sid in incomplete:
-            problem("error", sid, "étape incomplète")
+            problems.append({"severity": "error", "file": sid, "message": "étape incomplète"})
 
     errors = [p for p in problems if p["severity"] == "error"]
     return {"ok": not errors, "folder": str(folder.resolve()), "incomplete": incomplete,

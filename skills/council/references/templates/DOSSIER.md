@@ -10,7 +10,7 @@
 
 ## 1. Options sur la table
 
-| Option | Ce qu'elle veut dire | Réversible ? | Coût / délai approximatif |
+| Option | Ce qu'elle veut dire | Ce qui est engagé ou transmis | Coût / délai approximatif |
 |---|---|---|---|
 | Ne rien faire | ... | | |
 | ... | ... | | |
@@ -44,9 +44,9 @@ Chaque fait a une source vérifiable. Une seule base par tableau, nommée ; dire
 
 <Les trous que le conseil ne doit pas masquer, et où chacun a été cherché : « pas trouvé » n'est pas « n'existe pas ».>
 
-## 7. Positions déjà prises
+## 7. Ce qui est déjà décidé ou écarté
 
-<L'inclination actuelle du décideur, s'il en a une, posée comme une position à tester, pas comme une prémisse.>
+<Les décisions déjà prises par d'autres (organisation, contrat, séance précédente), comme des faits sourcés. Jamais le penchant du décideur : il reste dans GRILLE.md, que les angles ne lisent pas.>
 
 ## 8. Ce qu'on demande au conseil
 

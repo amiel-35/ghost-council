@@ -1,21 +1,64 @@
 {
   "name": "deliberation",
   "description": "Délibération complète : dossier commun, vérificateur, tour 1 indépendant, corrections, bilan à options lettrées, tour 2 informé, arbitre. Pour une décision lourde et peu réversible.",
-  "seats": {"min": 3, "max": 9, "recommended": [3, 7]},
-  "arbiter": {"default": "neutre", "optional": false},
+  "seats": {
+    "min": 3,
+    "max": 9,
+    "recommended": [
+      3,
+      7
+    ]
+  },
+  "arbiter": {
+    "default": "neutre",
+    "optional": false
+  },
   "steps": [
     {
       "id": "cadrage",
-      "label": "Cadrage et grille validée",
+      "label": "Cadrage",
       "file": "CADRAGE.md",
       "template": "CADRAGE.md",
       "role": "organisateur",
-      "fields": ["Question", "Grille validée"],
-      "expect": [
-        {"field": "Grille validée", "starts_with": "oui", "severity": "error",
-         "message": "la grille n'est pas validée : la faire valider par le décideur avant le tour (règle 4)"}
+      "fields": [
+        "Question"
       ],
-      "next": "remplir CADRAGE.md et faire valider la grille d'angles par le décideur"
+      "next": "remplir CADRAGE.md (question fermée et neutre, faits sourcés, sources, options dont « ne rien faire ») ; voir references/cadrage.md"
+    },
+    {
+      "id": "grille",
+      "label": "Grille validée",
+      "file": "GRILLE.md",
+      "template": "GRILLE.md",
+      "role": "organisateur",
+      "after": [
+        "cadrage"
+      ],
+      "fields": [
+        "Grille validée"
+      ],
+      "expect": [
+        {
+          "field": "Grille validée",
+          "starts_with": "oui",
+          "severity": "error",
+          "message": "la grille n'est pas validée : la faire valider par le décideur avant le tour (règle 4)"
+        }
+      ],
+      "next": "remplir GRILLE.md (ce que couvre chaque angle, les trois sièges, le penchant du décideur) et faire valider la grille ; voir references/cadrage.md"
+    },
+    {
+      "id": "parties",
+      "label": "Fiches des parties prenantes",
+      "file": "PARTIES.md",
+      "template": "PARTIES.md",
+      "role": "organisateur",
+      "requires_parties": true,
+      "after": [
+        "cadrage"
+      ],
+      "party_cards": true,
+      "next": "remplir une fiche par partie dans PARTIES.md (qui, mandat, ce qu'elle gagne ou perd, priorités, angles morts, lignes rouges) ; voir references/cadrage.md"
     },
     {
       "id": "dossier",
@@ -23,9 +66,63 @@
       "file": "DOSSIER.md",
       "template": "DOSSIER.md",
       "role": "organisateur",
-      "after": ["cadrage"],
-      "headings": ["la question en une ligne", "options", "faits", "estimations", "ce qu'on ne sait pas", "positions deja prises", "ce qu'on demande au conseil"],
+      "after": [
+        "grille"
+      ],
+      "headings": [
+        "la question en une ligne",
+        "options",
+        "faits",
+        "estimations",
+        "ce qu'on ne sait pas",
+        "deja decide",
+        "ce qu'on demande au conseil"
+      ],
       "next": "écrire DOSSIER.md : question neutre, options dont « ne rien faire », faits sourcés, inconnues (voir references/dossier.md)"
+    },
+    {
+      "id": "relecture",
+      "label": "Relecture du cadrage",
+      "file": "RELECTURE.md",
+      "template": "RELECTURE.md",
+      "brief": "relecture.md",
+      "role": "verificateur",
+      "after": [
+        "dossier",
+        "parties"
+      ],
+      "reads": [
+        "cadrage",
+        "grille",
+        "dossier",
+        "parties"
+      ],
+      "fields": [
+        "Verdict de relecture"
+      ],
+      "expect": [
+        {
+          "field": "Verdict de relecture",
+          "starts_with": "prêt",
+          "severity": "error",
+          "message": "le relecteur demande des corrections : corriger le cadrage, puis relancer la relecture (`council.py brief SEANCE relecture`) ; après deux relectures, le décideur peut lever le verrou dans GRILLE.md (« **Relecture levée par :** »), réserves notées",
+          "waived_by": {
+            "step": "grille",
+            "field": "Relecture levée par",
+            "passes_of": "relecture",
+            "min_passes": 2
+          }
+        }
+      ],
+      "headings": [
+        "fuites",
+        "premisses semees",
+        "faits verifies",
+        "ce qui manque",
+        "corrections demandees"
+      ],
+      "next": "lancer la relecture du cadrage dans un sous-agent isolé (`council.py brief SEANCE relecture`) ; le tour ne part que sur « prêt »",
+      "counts_passes": true
     },
     {
       "id": "tour1",
@@ -35,13 +132,25 @@
       "template": "TOUR1.md",
       "brief": "avis.md",
       "role": "angle",
-      "after": ["dossier"],
-      "reads": ["cadrage", "dossier", "addenda"],
-      "fields": ["Position", "Confiance"],
+      "after": [
+        "relecture"
+      ],
+      "reads": [
+        "cadrage",
+        "dossier",
+        "addenda"
+      ],
+      "fields": [
+        "Position",
+        "Confiance"
+      ],
       "tally_field": "Position",
       "require_text": [
-        {"pattern": "ind[ée]pendan", "severity": "warning",
-         "message": "pas de mention d'indépendance (le tour 1 s'écrit sans lire les autres)"}
+        {
+          "pattern": "ind[ée]pendan",
+          "severity": "warning",
+          "message": "pas de mention d'indépendance (le tour 1 s'écrit sans lire les autres)"
+        }
       ],
       "next": "lancer le tour 1 : un sous-agent par angle, en parallèle (`council.py brief SEANCE tour1 <angle>`)"
     },
@@ -52,10 +161,24 @@
       "template": "VERIFICATION.md",
       "brief": "verificateur.md",
       "role": "verificateur",
-      "after": ["dossier"],
-      "reads": ["dossier", "tour1"],
-      "require_any": {"values": ["CONFIRMÉ", "CONTREDIT", "TROMPEUR", "NON VÉRIFIÉ", "ESTIMATION"],
-                      "message": "aucun verdict (CONFIRMÉ, CONTREDIT, TROMPEUR, NON VÉRIFIÉ, ESTIMATION)"},
+      "after": [
+        "relecture"
+      ],
+      "reads": [
+        "cadrage",
+        "dossier",
+        "tour1"
+      ],
+      "require_any": {
+        "values": [
+          "CONFIRMÉ",
+          "CONTREDIT",
+          "TROMPEUR",
+          "NON VÉRIFIÉ",
+          "ESTIMATION"
+        ],
+        "message": "aucun verdict (CONFIRMÉ, CONTREDIT, TROMPEUR, NON VÉRIFIÉ, ESTIMATION)"
+      },
       "next": "lancer le vérificateur (`council.py brief SEANCE verification`), en même temps que le tour 1"
     },
     {
@@ -66,10 +189,16 @@
       "optional": true,
       "template": "ADDENDUM.md",
       "role": "organisateur",
-      "forbid_fields": ["Position", "Vote"],
+      "forbid_fields": [
+        "Position",
+        "Vote"
+      ],
       "require_text": [
-        {"pattern": "prime sur", "severity": "warning",
-         "message": "ne dit pas sur quel fichier il prime"}
+        {
+          "pattern": "prime sur",
+          "severity": "warning",
+          "message": "ne dit pas sur quel fichier il prime"
+        }
       ],
       "next": "publier les corrections du vérificateur en addendum (`council.py addendum SEANCE`), ou passer s'il n'y en a pas"
     },
@@ -79,11 +208,17 @@
       "file": "BILAN-TOUR1.md",
       "template": "BILAN.md",
       "role": "organisateur",
-      "after": ["tour1", "verification"],
+      "after": [
+        "tour1",
+        "verification"
+      ],
       "mentions_all_seats": true,
       "require_text": [
-        {"pattern": "^\\s*[-*]\\s+\\*\\*[A-Z]\\.\\*\\*", "severity": "warning",
-         "message": "pas d'options lettrées (- **A.** ...) pour le tour 2"}
+        {
+          "pattern": "^\\s*[-*]\\s+\\*\\*[A-Z]\\.\\*\\*",
+          "severity": "warning",
+          "message": "pas d'options lettrées (- **A.** ...) pour le tour 2"
+        }
       ],
       "next": "écrire BILAN-TOUR1.md : positions (`council.py tally SEANCE --step tour1`), désaccords non tranchés, options lettrées"
     },
@@ -95,13 +230,30 @@
       "template": "TOUR2.md",
       "brief": "tour2.md",
       "role": "angle",
-      "after": ["bilan"],
-      "reads": ["cadrage", "dossier", "addenda", "verification", "tour1", "bilan"],
-      "fields": ["Vote", "Changé depuis le tour 1", "Confiance"],
+      "after": [
+        "bilan"
+      ],
+      "reads": [
+        "cadrage",
+        "dossier",
+        "addenda",
+        "verification",
+        "tour1",
+        "bilan"
+      ],
+      "fields": [
+        "Vote",
+        "Changé depuis le tour 1",
+        "Confiance"
+      ],
       "tally_field": "Vote",
       "vote": true,
-      "justify": {"field": "Changé depuis le tour 1", "if_starts": "oui", "min_words": 3,
-                  "message": "vote changé sans nommer l'argument ou la preuve qui l'a fait changer"},
+      "justify": {
+        "field": "Changé depuis le tour 1",
+        "if_starts": "oui",
+        "min_words": 3,
+        "message": "vote changé sans nommer l'argument ou la preuve qui l'a fait changer"
+      },
       "next": "lancer le tour 2 : chaque angle lit le bilan et tous les avis du tour 1, puis vote (`council.py brief SEANCE tour2 <angle>`)"
     },
     {
@@ -111,10 +263,34 @@
       "template": "SYNTHESE-DELIBERATION.md",
       "brief": "arbitre.md",
       "role": "arbitre",
-      "after": ["tour2"],
-      "reads": ["cadrage", "dossier", "addenda", "verification", "bilan", "tour1", "tour2"],
-      "fields": ["Arbitre", "Vote du conseil"],
-      "headings": ["convergences", "desaccords", "dissidence", "risques", "ce qu'aucun angle n'a regarde", "question a trancher", "prochaines etapes", "limites"],
+      "after": [
+        "tour2"
+      ],
+      "reads": [
+        "cadrage",
+        "grille",
+        "parties",
+        "dossier",
+        "addenda",
+        "verification",
+        "bilan",
+        "tour1",
+        "tour2"
+      ],
+      "fields": [
+        "Arbitre",
+        "Vote du conseil"
+      ],
+      "headings": [
+        "convergences",
+        "desaccords",
+        "dissidence",
+        "risques",
+        "ce qu'aucun angle n'a regarde",
+        "question a trancher",
+        "prochaines etapes",
+        "limites"
+      ],
       "names_arbiter": true,
       "next": "compter les votes (`council.py tally SEANCE --step tour2`) puis lancer l'arbitre isolé (`council.py brief SEANCE synthese`)"
     }

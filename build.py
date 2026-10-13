@@ -21,6 +21,8 @@ from pathlib import Path
 SKILLS_DIR = Path("skills")
 DIST_SKILLS_DIR = Path("dist/skills")
 PLUGIN_JSON = Path("dist/.claude-plugin/plugin.json")
+# Embarqués dans le plugin installé : la licence du projet et celle du code repris (MIT).
+LEGAL_FILES = (Path("LICENSE"), Path("THIRD_PARTY.md"))
 
 FRONTMATTER_RE = re.compile(r"^---\n(.*?)\n---\n", re.DOTALL)
 NAME_RE = re.compile(r"^name:\s*(\S+)", re.MULTILINE)
@@ -76,6 +78,9 @@ def main() -> int:
     for skill_dir in skill_dirs:
         shutil.copytree(skill_dir, DIST_SKILLS_DIR / skill_dir.name)
     print(f"\n✓ synced {len(skill_dirs)} skill(s) → {DIST_SKILLS_DIR}/")
+    for legal in LEGAL_FILES:
+        shutil.copy2(legal, DIST_SKILLS_DIR.parent / legal.name)
+    print(f"✓ copied {', '.join(p.name for p in LEGAL_FILES)} → {DIST_SKILLS_DIR.parent}/")
 
     if not PLUGIN_JSON.exists():
         print(f"✗ {PLUGIN_JSON} not found — plugin manifest missing")

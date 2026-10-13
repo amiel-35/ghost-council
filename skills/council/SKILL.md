@@ -1,5 +1,6 @@
 ---
 name: council
+license: MIT (parties reprises d'advisory-council, nzanepro, voir THIRD_PARTY.md)
 description: >
   Fait délibérer des angles indépendants sur une décision avant qu'elle soit prise,
   puis un arbitre rend la carte des désaccords : le conseil ne tranche pas, l'humain
@@ -38,7 +39,8 @@ angles et l'arbitre, tu tiens la séance. Tu n'écris aucun avis et tu n'arbitre
 2. **Un angle par avis.** Empiler deux angles sur un avis produit une réponse molle
    qui n'assume ni l'un ni l'autre.
 3. **Aucun angle ne reçoit la réponse attendue.** Ni ce qu'on espère, ni ce que les
-   autres ont dit, ni ce qui a déjà été corrigé.
+   autres ont dit. En `deliberation`, les corrections factuelles publiées en addenda
+   sont des faits, pas des avis : elles se lisent, sans dire quel angle les a trouvées.
 4. **La grille se valide avant le tour.** C'est la décision de celui qui décide,
    donc c'est sa grille.
 5. **L'arbitre n'est pas l'organisateur, et il est toujours nommé dans la
@@ -61,9 +63,11 @@ par une **référence**, que le script résout en chemin à lire :
 | `ghost:popper` | un ghost de cette collection : une méthode philosophique | `skills/popper/SKILL.md`, à côté de ce skill |
 | `ix:dixieme-homme` | une posture d'ix-skills (`dixieme-homme`, `contrarian`, `red-team`, `key-assumptions`, `firstprinciples`, `outside-in`, `executor`, `expansionist`, `outsider`...) | le premier dossier qui l'a dans `COUNCIL_ANGLES_PATH` (défaut : le cache du plugin ix-skills, version la plus haute) |
 | `costume:humain` | une dimension métier qu'on risque d'oublier | la section `## Humain` de `references/angles/costumes.md` |
+| `partie:client` | une partie prenante : quelqu'un que la décision touche (qui gagne, paie, opère, bloque, subit) | sa fiche `## client` dans `PARTIES.md`, écrite pour la séance |
 | `file:<chemin>` | n'importe quel SKILL.md | ce fichier |
 
-Sans préfixe, le script cherche dans l'ordre `ghost:`, `costume:`, `ix:`. Une
+Sans préfixe, le script cherche dans l'ordre `ghost:`, `costume:`, `ix:`. Une partie
+se donne toujours avec son préfixe. Une
 référence introuvable arrête l'`init` avec un message qui dit où il a cherché :
 jamais en pleine séance.
 
@@ -73,22 +77,38 @@ autre modèle.
 
 **Quelle famille.** Conséquences éparpillées : des costumes (la couverture).
 Pari ou choix de direction : des postures et des ghosts (la profondeur, ils
-attaquent le raisonnement lui-même). Décision lourde : les deux. Le costume
+attaquent le raisonnement lui-même). Décision qui touche des gens précis : des
+parties (les intérêts réels). Décision lourde : un mélange.
+
+**Les parties prenantes.** Une partie n'a pas de bibliothèque : elle change à chaque
+décision. `init` crée dans `PARTIES.md` une fiche par `partie:<id>` (qui, mandat, ce
+qu'elle gagne ou perd, ce qu'elle sait, priorités, angles morts, lignes rouges, ce qui
+la ferait changer d'avis), que l'organisateur remplit avant la relecture. Chaque partie
+ne lit que sa fiche ; les autres angles ne l'ouvrent pas. Une partie est un rôle ou un
+type d'acteur, jamais une personne réelle nommée, et sa fiche décrit une position, pas
+la conclusion qu'elle devrait tirer. Le costume
 `humain` est le plus souvent oublié et le plus souvent décisif.
 
-**Ne rien faire.** Quand la question s'y prête, la grille compte un angle qui a
-intérêt à ne rien faire (souvent `costume:financier` ou `ix:executor`), et « ne rien faire » figure dans les options du cadrage.
+**Trois sièges à vérifier.** Un angle qui a intérêt à ne rien faire (souvent
+`costume:financier` ou `ix:executor`), un angle pour la partie qui a le moins de voix
+(souvent `costume:humain`), et un angle qui défend l'option sérieusement (souvent
+`ix:expansionist`) ; sans lui, la grille penche d'un seul côté. « Ne rien faire »
+figure dans les options du cadrage.
+
+**Le contradicteur.** Au tour 1, personne n'a encore parlé : un `ix:dixieme-homme`
+plaide contre la thèse qu'il devine. Il devine à partir du cadrage, d'où la règle
+de ne jamais y laisser le penchant du décideur.
 
 **Taille.** Trois angles pour une question cadrée, cinq ou six pour un arbitrage
-lourd. Au-delà, la synthèse devient illisible.
+lourd, sept au plus en `deliberation`. Au-delà, la synthèse devient illisible.
 
 ## Les formats
 
 | Format | Déroulé | Quand |
 |---|---|---|
-| `tour` (défaut) | cadrage → avis en parallèle → arbitre | la plupart des décisions |
-| `compare` | cadrage → deux avis côte à côte → ce que la divergence révèle | comprendre pourquoi deux cadres voient le même problème autrement |
-| `deliberation` | cadrage → dossier commun → tour 1 + vérificateur → corrections → bilan à options lettrées → tour 2 → arbitre | décision lourde, peu réversible, qui bute sur des faits |
+| `tour` (défaut) | cadrage, grille → relecture → avis en parallèle → arbitre | la plupart des décisions |
+| `compare` | cadrage, grille → relecture → deux avis côte à côte → ce que la divergence révèle | comprendre pourquoi deux cadres voient le même problème autrement |
+| `deliberation` | cadrage, grille → dossier commun → relecture → tour 1 + vérificateur → corrections → bilan à options lettrées → tour 2 → arbitre | décision lourde, peu réversible, qui bute sur des faits |
 
 Le déroulé n'est pas codé dans le script : il est lu dans
 `references/formats/<format>.json` (étapes, fichiers, dépendances, champs
@@ -138,17 +158,24 @@ Varier le modèle décorrèle un peu les angles morts, jamais complètement.
 
 ## Méthode
 
-Le script : `python3 <dossier de ce skill>/scripts/council.py`. Stdlib seule,
-n'écrase jamais un fichier, `--json` sur chaque sous-commande, code 0 si tout va
-bien, 1 sur erreur d'usage (le message dit quoi faire), 3 si le contrôle trouve un
-problème.
+Le script : `<dossier de ce skill>/scripts/council.py` ; dans les exemples ci-dessous,
+`council.py` désigne ce chemin complet (un chemin relatif ne marche pas depuis un
+plugin installé). Stdlib seule, n'écrase jamais un fichier, `--json` sur chaque
+sous-commande. Codes de sortie : 0 si tout va bien, 1 sur erreur d'usage ou d'entrée
+(le message dit quoi faire), 2 sur une commande mal formée (argparse), 3 si le
+contrôle trouve un problème.
 
 ### 1. Cadrer et proposer la grille
 
-Reformuler la décision en **une question fermée** : une question floue produit six
-avis flous. Choisir le format, les angles et l'arbitre. Les présenter au décideur
-avec une phrase par angle (ce qu'il couvre que les autres ne couvrent pas), et
-**attendre sa validation**. S'il conteste un angle, en changer.
+Lire `references/cadrage.md` avant d'écrire quoi que ce soit : le cadrage est la
+pièce qui fausse le plus souvent un conseil, parce que chaque angle reprend sans le
+savoir ce qu'il pose comme acquis.
+
+Reformuler la décision en **une question fermée et neutre** : une question floue
+produit six avis flous. Choisir le format, les angles et l'arbitre. Les présenter au
+décideur avec une phrase par angle (ce qu'il couvre que les autres ne couvrent pas),
+et **attendre sa validation**. S'il conteste un angle, en changer. Lui demander s'il
+penche déjà pour une option : ça se note, ça ne se montre pas aux angles.
 
 Si la décision bute sur un chiffre inconnu, le dire : aller le chercher coûte moins
 cher que faire délibérer sept avis sur du vide.
@@ -156,7 +183,7 @@ cher que faire délibérer sept avis sur du vide.
 ### 2. Ouvrir la séance
 
 ```bash
-python3 scripts/council.py init <seance> --title "Passer en freemium" \
+python3 council.py init <seance> --title "Passer en freemium" \
     --seat ghost:popper --seat ix:dixieme-homme@opus --seat costume:humain
 # --format compare|deliberation, --arbiter adversarial|ghost:zeus@opus|...
 ```
@@ -164,19 +191,36 @@ python3 scripts/council.py init <seance> --title "Passer en freemium" \
 `<seance>` est un dossier neuf dans le projet de l'utilisateur. `init` crée
 `council.json` et un gabarit par fichier, marqué `<!-- council:todo -->`.
 
-Remplir `CADRAGE.md` : la question, les deux ou trois faits sans lesquels on
-raisonne à faux, les sources que les angles peuvent lire, les options dont « ne
-rien faire », la raison de chaque angle. Écrire `**Grille validée :** oui, par
-<qui>, le <date>` seulement quand c'est vrai. Supprimer la ligne `council:todo`.
+Deux fichiers, deux lecteurs :
+
+- **`CADRAGE.md`, que lisent les angles** : la question, les faits sans lesquels on
+  raisonne à faux (chacun recopié depuis sa source relue, avec cette source), les
+  sources autorisées, les options dont « ne rien faire », ce qu'on ne sait pas.
+  Rien sur la grille, rien sur ce que le décideur espère.
+- **`GRILLE.md`, que les angles ne lisent jamais** : la grille, ce que couvre chaque
+  angle (jamais ce qu'il devrait trouver), les trois sièges, le penchant du décideur,
+  les angles écartés. Écrire `**Grille validée :** oui, par <qui>, le <date>`
+  seulement quand c'est vrai.
+
+Supprimer la ligne `council:todo` de chacun.
+
+**La relecture.** Un sous-agent isolé, sans angle, lit les deux fichiers
+(`brief <seance> relecture`) et écrit `RELECTURE.md` : fuites, prémisses semées,
+faits vérifiés contre leur source, ce qui manque. Le tour ne part que sur
+`**Verdict de relecture :** prêt` ; `brief` refuse sinon. Sur « à corriger », corriger
+le cadrage et relancer la relecture, qui réécrit le fichier. **Deux relectures au
+plus** : si la seconde demande encore des corrections, appliquer ce qui peut l'être,
+noter le reste dans `GRILLE.md` §6, et faire lever le verrou par le décideur
+(`**Relecture levée par :** <qui>, réserves en §6`).
 
 ### 3. Faire tourner les étapes
 
 À chaque étape, `status` dit quoi faire :
 
 ```bash
-python3 scripts/council.py status <seance>
-python3 scripts/council.py brief <seance> avis popper     # le brief, à donner tel quel
-python3 scripts/council.py brief <seance> synthese        # celui de l'arbitre
+python3 council.py status <seance>
+python3 council.py brief <seance> avis popper     # le brief, à donner tel quel
+python3 council.py brief <seance> synthese        # celui de l'arbitre
 ```
 
 - **Les angles en parallèle.** Un sous-agent par angle, **tous lancés dans le même
@@ -196,11 +240,13 @@ dire dans la restitution que tous les avis viennent d'un seul contexte.
 
 ### 4. En format `deliberation`
 
+- **La relecture vient après le dossier** : elle relit le cadrage, la grille et le
+  dossier ensemble, avant que le tour 1 parte.
 - **Le dossier commun** (`DOSSIER.md`) : le relevé factuel identique pour tous,
   écrit avant le tour 1 et plus jamais retouché ensuite. Question neutre, options
   dont « ne rien faire », faits sourcés, estimations avec leur méthode, ce qu'on ne
-  sait pas, l'inclination du décideur posée comme une position à tester. Voir
-  `references/dossier.md`.
+  sait pas, ce qui est déjà décidé. Jamais le penchant du décideur, qui reste dans
+  `GRILLE.md`. Voir `references/dossier.md`.
 - **Le vérificateur** (`brief <seance> verification`) : sans angle, sans position,
   sans vote. Il part en même temps que le tour 1 et vérifie chaque affirmation
   porteuse contre sa source primaire. C'est le siège le moins cher et celui qui
@@ -219,7 +265,7 @@ dire dans la restitution que tous les avis viennent d'un seul contexte.
 ### 5. Contrôler et restituer
 
 ```bash
-python3 scripts/council.py check <seance> --final
+python3 council.py check <seance> --final
 ```
 
 `check` contrôle l'ordre (pas de synthèse avant tous les avis, pas de bilan avant
@@ -248,8 +294,8 @@ ne pas simuler un désaccord.
 - **L'indépendance a un plafond.** Si tous les avis viennent du même modèle, ils
   partagent ses angles morts. Varier le modèle par siège décorrèle un peu, jamais
   complètement.
-- **Le coût est réel.** Six angles et un arbitre, c'est sept exécutions ; une
-  délibération complète en fait le double. Réserver aux décisions qui engagent. Sur
+- **Le coût est réel.** Six angles, une ou deux relectures et un arbitre, c'est huit
+  à neuf exécutions ; une délibération complète en fait le double. Réserver aux décisions qui engagent. Sur
   une question fermée à faible enjeu, un seul avis contradictoire suffit.
 - **Un conseil ne remplace pas une donnée manquante.**
 - **Il ne convient pas aux décisions réversibles à faible coût** : le rituel coûte
@@ -270,5 +316,5 @@ d'indépendance, qui est ici la variable qui compte.
 
 Le script, le dossier commun, le vérificateur et le second tour sont adaptés
 d'[advisory-council](https://github.com/nzanepro/tvr-skills-agent-advisory-council)
-de nzanepro (MIT, voir `THIRD_PARTY.md` à la racine du repo), dont on n'a pas repris
+de nzanepro (MIT, voir `THIRD_PARTY.md` à la racine du dépôt et du plugin), dont on n'a pas repris
 les personas parties prenantes.
