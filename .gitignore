@@ -3,3 +3,7 @@ docs/superpowers/
 # Hors git : matière de travail locale et boîte de réception
 ressources/
 INBOX.ndjson
+
+# Python
+__pycache__/
+.pytest_cache/

@@ -1,0 +1,54 @@
+{
+  "name": "compare",
+  "description": "Deux angles côte à côte sur la même question. Pas de verdict : la divergence nommée sous forme de question. --arbiter aucun pour la pure juxtaposition.",
+  "seats": {"min": 2, "max": 2, "recommended": [2, 2]},
+  "arbiter": {"default": "neutre", "optional": true},
+  "steps": [
+    {
+      "id": "cadrage",
+      "label": "Cadrage et paire validée",
+      "file": "CADRAGE.md",
+      "template": "CADRAGE.md",
+      "role": "organisateur",
+      "fields": ["Question", "Grille validée"],
+      "expect": [
+        {"field": "Grille validée", "starts_with": "oui", "severity": "error",
+         "message": "la paire d'angles n'est pas validée : la faire valider avant le tour (règle 4)"}
+      ],
+      "next": "remplir CADRAGE.md et faire valider la paire d'angles"
+    },
+    {
+      "id": "avis",
+      "label": "Avis des deux angles",
+      "file": "AVIS-{seat}.md",
+      "per_seat": true,
+      "template": "AVIS.md",
+      "brief": "avis.md",
+      "role": "angle",
+      "after": ["cadrage"],
+      "reads": ["cadrage"],
+      "fields": ["Position", "Confiance"],
+      "tally_field": "Position",
+      "require_text": [
+        {"pattern": "ind[ée]pendan", "severity": "warning",
+         "message": "pas de mention d'indépendance (l'avis doit être écrit sans lire l'autre)"}
+      ],
+      "next": "lancer les deux angles en parallèle, chacun isolé (`council.py brief SEANCE avis <angle>`)"
+    },
+    {
+      "id": "divergence",
+      "label": "Ce que la divergence révèle",
+      "file": "DIVERGENCE.md",
+      "template": "DIVERGENCE.md",
+      "brief": "divergence.md",
+      "role": "arbitre",
+      "requires_arbiter": true,
+      "after": ["avis"],
+      "reads": ["cadrage", "avis"],
+      "fields": ["Arbitre"],
+      "headings": ["ce que la divergence revele"],
+      "names_arbiter": true,
+      "next": "lancer le lecteur de divergence dans un sous-agent isolé (`council.py brief SEANCE divergence`)"
+    }
+  ]
+}

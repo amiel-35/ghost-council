@@ -31,13 +31,20 @@ Candidats : Churchill, Machiavel (version persona vs méthode existante), Zizek,
 
 ## Outils à construire
 
-**État** : les 4 outils ci-dessous existent déjà en `draft` complet dans `drafts/`
-(usage, paramètres, format d'output rédigés) — bloqués par des questions ouvertes
-documentées en bas de chaque fichier, pas par un manque de conception.
-`skills/zeus/` (arbitre par défaut) et `skills/nash/` (arbitre stratégique) sont
-déjà codés et documentés ; il ne manque que l'orchestration elle-même.
+**État** : `/council` est livré (`skills/council/`, v1 du 2026-10-13), et absorbe
+`/compare` comme format. `/suggest` et `/evaluate` restent en `draft` dans `drafts/`,
+bloqués par les questions ouvertes en bas de chaque fichier.
 
-### `/council [question]` — faire débattre les ghosts
+### [x] `/council [question]` — faire débattre les ghosts
+Livré en v1 : `skills/council/` (SKILL.md, `scripts/council.py`, formats `tour`,
+`compare`, `deliberation`). Angles au choix (`ghost:`, `ix:`, `costume:`, `file:`),
+arbitre neutre par défaut, un modèle par siège en option. La spécification d'origine
+ci-dessous est gardée pour mémoire.
+
+À faire ensuite (V2) : le format `revue`, évaluation croisée anonymisée (lettres A à E
+tirées au hasard, clé gardée hors de portée des angles), sur le modèle du conseil
+d'ix-memory.
+
 Prompt qui soumet une question à plusieurs philosophes simultanément, puis arbitre les divergences.
 Inspiré de [llm-council](https://github.com/masatoEmata/llm-council) — plusieurs LLM (ou plusieurs roles) délibèrent et convergent.
 - Sélectionner 3-5 philosophes pertinents pour la question
@@ -46,16 +53,18 @@ Inspiré de [llm-council](https://github.com/masatoEmata/llm-council) — plusie
 - Ne tranche pas — expose la carte des désaccords
 
 **Paramètre `arbiter` (optionnel)**
-Par défaut : Zeus — tranche depuis au-dessus, sans méthode propre.
+Par défaut : l'arbitre neutre (décision du 2026-10-13 : le conseil rend la carte des
+désaccords, il ne tranche pas ; Zeus, qui tranche, reste disponible avec `--arbiter zeus`).
 Remplaçable par n'importe quel skill de la collection : le philosophe applique alors sa méthode à l'arbitrage plutôt qu'au problème.
 Cas d'usage naturels :
 - **Nash** pour les décisions stratégiques et de négociation
 - **Aristote** pour les décisions empiriques (classer les convergences comme des cas, généraliser au minimum)
-- **Trump** comme red team — si le verdict tient avec Trump en arbitre, il est solide
+- **Arbitre adversarial** (`--arbiter adversarial`) comme red team — si le verdict tient avec un arbitre brutal, il est solide. L'idée vient de « Trump en arbitre » ; l'angle porte le nom de la posture, pas celui de la personne.
 
 Limite : un arbitre avec sa propre méthode importe ses biais dans la synthèse. C'est voulu ou c'est un bug selon ce qu'on cherche.
 
-### `/compare [A] [B] [question]` — confrontation ciblée
+### [x] `/compare [A] [B] [question]` — confrontation ciblée
+Livré comme format de `/council` : `--format compare`.
 Deux philosophes sur le même input, côte à côte. Fait apparaître les hypothèses incompatibles.
 Exemple : `compare Popper Marx "La réglementation des plateformes est-elle efficace ?"`
 
