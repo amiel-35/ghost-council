@@ -141,6 +141,7 @@ flowchart LR
 - [x] Prepared framing, isolated review, stakeholder seats
 - [ ] A "what matters to the decision owner" section, read by the arbiter
 - [ ] A `revue` format: anonymized cross-review of the opinions
+- [ ] Council refinements spotted in real sessions: a light vote in `tour`, follow-up sessions
 - [ ] `/suggest` (which ghosts for this problem?) and `/evaluate` (did an output follow the method?)
 - [ ] New minds: Taleb, Munger, Kahneman, Arendt, Bourdieu, Feynman…
 - [ ] Easier install outside Claude Code (Gemini CLI, custom GPTs)

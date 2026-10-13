@@ -1,157 +1,109 @@
-# TODO / Roadmap
+# TODO / Feuille de route
 
-Idées en vrac, non ordonnées. Certaines sont simples, d'autres sont des projets.
-
----
-
-## Nouveaux esprits
-
-### Penseurs modernes à encoder
-- **Nassim Taleb** — distingue fragile / robuste / antifragile, cherche la convexité des situations
-- **Charlie Munger** — grille de modèles mentaux, inversion systématique ("inversez, toujours inversez")
-- **Daniel Kahneman** — sépare système 1 et système 2, traque les biais cognitifs dans un raisonnement
-- **Hannah Arendt** — analyse le pouvoir comme action collective, détecte la banalité du mal dans les processus bureaucratiques
-- **Simone de Beauvoir** — lit les structures de domination dans les représentations du "naturel"
-- **Chomsky** — sépare grammaire profonde et grammaire de surface, appliqué à l'analyse des discours
-- **Ivan Illich** — contre-productivité des institutions passé un certain seuil, monopole radical
-- **Marshall McLuhan** — le medium est le message, analyse des effets d'un canal sur son contenu
-- **Bourdieu** — capital symbolique, habitus, champ — lit les comportements comme stratégies de distinction
-
-### Penseurs disciplinaires (hors philo pure)
-- **Shannon** — information theory appliquée : quel est le signal, quel est le bruit ?
-- **Feynman** — first principles thinking, refuse les analogies non fondées
-- ~~Von Neumann / Nash~~ — fait, voir `skills/nash/`
-
-### Personas (variante assumée)
-Contrairement aux skills méthode, les personas encodent le personnage + la méthode + le style.
-Plus caricaturaux, plus entertainants, limites documentées plus longues.
-Candidats : Churchill, Machiavel (version persona vs méthode existante), Zizek, Socrate version ironique.
+La feuille de route résumée est dans le README ([FR](README.fr.md#feuille-de-route), [EN](README.md#roadmap)). Ce fichier en donne le détail, dans le même ordre, puis les idées en vrac.
 
 ---
 
-## Outils à construire
+## État au 2026-10-13
 
-**État** : `/council` est livré (`skills/council/`, v1 le 2026-10-13, plugin 0.2.2), et
-absorbe `/compare` comme format. `/suggest` et `/evaluate` restent en `draft` dans
-`drafts/`, bloqués par les questions ouvertes en bas de chaque fichier.
-
-### [x] `/council [question]` — faire débattre les ghosts
-Livré : `skills/council/` (SKILL.md, `scripts/council.py`, formats `tour`, `compare`,
-`deliberation`). Angles au choix (`ghost:`, `ix:`, `costume:`, `partie:`, `file:`),
-arbitre neutre par défaut, un modèle par siège en option. Depuis la 0.2.1-0.2.2 : cadrage
-préparé (ce que lisent les angles séparé de la grille et du penchant du décideur),
-relecture isolée avant le tour (deux passes au plus), sièges de parties prenantes. La
-spécification d'origine ci-dessous est gardée pour mémoire.
-
-À faire ensuite :
-- Une section « ce qui compte pour le décideur » dans `GRILLE.md`, lue par l'arbitre :
-  les séances réelles ont montré que les angles pèsent les faits, pas les valeurs de
-  celui qui décide.
-- ~~La doc `docs/fr/council.md` et `docs/en/council.md`~~ — faite le 2026-10-13.
-
-À faire ensuite (V2) : le format `revue`, évaluation croisée anonymisée (lettres A à E
-tirées au hasard, clé gardée hors de portée des angles), sur le modèle du conseil
-d'ix-memory.
-
-Prompt qui soumet une question à plusieurs philosophes simultanément, puis arbitre les divergences.
-Inspiré de [llm-council](https://github.com/karpathy/llm-council) — plusieurs LLM (ou plusieurs roles) délibèrent et convergent.
-- Sélectionner 3-5 philosophes pertinents pour la question
-- Chaque philosophe applique sa méthode
-- L'arbitre synthétise les convergences et expose les contradictions irréductibles
-- Ne tranche pas — expose la carte des désaccords
-
-**Paramètre `arbiter` (optionnel)**
-Par défaut : l'arbitre neutre (décision du 2026-10-13 : le conseil rend la carte des
-désaccords, il ne tranche pas ; Zeus, qui tranche, reste disponible avec `--arbiter zeus`).
-Remplaçable par n'importe quel skill de la collection : le philosophe applique alors sa méthode à l'arbitrage plutôt qu'au problème.
-Cas d'usage naturels :
-- **Nash** pour les décisions stratégiques et de négociation
-- **Aristote** pour les décisions empiriques (classer les convergences comme des cas, généraliser au minimum)
-- **Arbitre adversarial** (`--arbiter adversarial`) comme red team — si le verdict tient avec un arbitre brutal, il est solide. L'idée vient de « Trump en arbitre » ; l'angle porte le nom de la posture, pas celui de la personne.
-
-Limite : un arbitre avec sa propre méthode importe ses biais dans la synthèse. C'est voulu ou c'est un bug selon ce qu'on cherche.
-
-### [x] `/compare [A] [B] [question]` — confrontation ciblée
-Livré comme format de `/council` : `--format compare`.
-Deux philosophes sur le même input, côte à côte. Fait apparaître les hypothèses incompatibles.
-Exemple : `compare Popper Marx "La réglementation des plateformes est-elle efficace ?"`
-
-### `/suggest [problème]` — quel ghost invoquer ?
-Décrit un problème, le skill recommande 2-3 philosophes pertinents avec une justification courte.
-Évite d'ouvrir le mauvais outil.
-
-### `/evaluate [philosophe] [output]` — auto-critique
-Meta-skill : donne un output censé appliquer une méthode, le skill évalue si la méthode a bien été suivie.
-Utile pour calibrer les skills eux-mêmes.
+- **Plugin 0.2.2**, 26 skills : 23 ghosts, Zeus (arbitre), `council`, `doc-skill`.
+- **`/council` livré** : formats `tour`, `compare` (qui remplace l'ancien `/compare`) et `deliberation` ; cinq familles d'angles (`ghost:`, `ix:`, `costume:`, `partie:`, `file:`) ; arbitre neutre par défaut ; un modèle par siège en option ; cadrage préparé (`CADRAGE.md` lu par les angles, `GRILLE.md` jamais) ; relecture isolée avant le tour, deux passes au plus ; 124 tests.
+- **Documentation** : [guide complet du conseil](docs/council/README.md) en FR et EN, fiches FR et EN de chaque skill, README au format standard (un fichier par langue).
+- **Mis à l'épreuve** sur des décisions réelles, puis comparé à advisory-council (nzanepro) sur un même brief, à froid : mêmes conclusions de fond ; `council` attrape les fuites de cadrage avant le tour, pour environ un tiers de coût en moins ; advisory-council rend une conclusion plus nette grâce à son vote en deux tours.
 
 ---
 
-## Installabilité cross-plateforme
+## À faire, dans l'ordre
 
-Actuellement : markdown portable, mais installation manuelle.
-Objectif : one-liner ou procédure minimale par plateforme.
+### 1. Conseil : ce qui compte pour le décideur
 
-### Claude Code
-```bash
-# Fonctionnel via skills/ (copie manuelle dans ~/.claude/skills/)
-# Déployable en plugin marketplace depuis 2026-08-29 :
-# dist/ + .claude-plugin/marketplace.json (cf. ix-skills pour le modèle)
-claude plugin marketplace add amiel-35/ghost-council
-```
-`dist/skills/` est généré depuis `skills/` par `build.py` — voir §Build ci-dessous.
-Ne jamais éditer `dist/skills/` à la main, il est écrasé au prochain `python3 build.py`.
+Les séances réelles l'ont montré : les angles pèsent des faits, pas les valeurs de celui qui décide. Un conseil peut déconseiller unanimement ce que le décideur fera quand même, pour une raison qu'aucun angle n'avait.
 
-**Build** : `python3 build.py` valide chaque `skills/<nom>/SKILL.md` (frontmatter
-`name`/`description` présent, `name` cohérent avec le nom du dossier), vide
-`dist/skills/` puis recopie tout depuis `skills/` — pour qu'un skill supprimé
-de `skills/` ne traîne pas dans `dist/`. `python3 build.py --check` valide sans
-écrire (dry-run, utile avant un commit ou en CI). Contrairement à `build.py` chez
-ix-skills, pas de transformation de frontmatter : `skills/<nom>/SKILL.md` est déjà
-au format cible, donc c'est une pure resynchronisation, pas une compilation.
+- Une section « ce qui compte pour le décideur » dans `GRILLE.md`, remplie avec lui au cadrage.
+- Lue par l'arbitre (pas par les angles, pour ne pas souffler de réponse), qui dit dans sa synthèse où la carte des désaccords croise ces valeurs.
 
-### Gemini CLI
-- Format GEMINI.md + skill activation — à tester et documenter
+### 2. Conseil : le format `revue`
 
-### GPT (Custom Instructions / GPTs)
-- Les skills sont du markdown pur → copiable dans les instructions système d'un GPT personnalisé
-- Créer un GPT "ghost-council" qui charge tous les skills en instructions ?
-- Ou prompt-pack à coller dans Custom Instructions
+Évaluation croisée anonymisée des avis, sur le modèle du conseil d'ix-memory : chaque avis reçoit une lettre (A à E) tirée au hasard, chaque angle classe les autres sans savoir qui les a écrits, la clé reste dans un fichier que les angles ne lisent pas.
 
-### OpenWebUI / Ollama
-- Compatible markdown — créer des "model files" ou system prompts pré-configurés
+### 3. Conseil : améliorations repérées en séance
 
-### Raycast / Alfred
-- Snippet ou extension qui copie le contenu d'un skill dans le clipboard
+- **Une conclusion plus nette en `tour`** : un vote léger sur des options lettrées, sans second tour complet (la force d'advisory-council relevée par la comparaison).
+- **Le contradicteur au bon moment** : au tour 1, `ix:dixieme-homme` plaide contre la thèse qu'il devine ; il servirait mieux au second tour d'une `deliberation`, une fois le consensus formé. À documenter, ou à proposer par défaut.
+- **Séance de suivi** : `init --suite <séance>` qui reprend les faits ayant survécu et interdit les avis de la séance précédente.
+- **L'indépendance déclarée** : la ligne « Indépendance » d'un avis est pré-remplie par le gabarit, donc invérifiable par `check`. Chercher un contrôle réel, ou l'assumer comme limite.
+- **« Ne rien faire » en option lettrée** : le décompte le compte aujourd'hui comme « Autre ».
 
-### Script d'installation
-```bash
-curl -s https://raw.githubusercontent.com/.../install.sh | bash
-# → copie les skills dans ~/.claude/skills/ ou équivalent
-```
+### 4. `/suggest` et `/evaluate`
+
+En `draft` dans `drafts/`, bloqués par les questions ouvertes en bas de chaque fichier.
+
+- **`/suggest [problème]`** : recommande 2 ou 3 ghosts pertinents, avec une justification courte. Pourrait devenir l'étape de choix de la grille de `/council`.
+- **`/evaluate [philosophe] [output]`** : évalue si un output a bien suivi la méthode annoncée. Utile pour calibrer les skills eux-mêmes.
+
+### 5. Nouveaux esprits
+
+**Penseurs modernes**
+- **Nassim Taleb** : distingue fragile, robuste, antifragile ; cherche la convexité des situations.
+- **Charlie Munger** : grille de modèles mentaux, inversion systématique.
+- **Daniel Kahneman** : sépare système 1 et système 2, traque les biais cognitifs dans un raisonnement.
+- **Hannah Arendt** : le pouvoir comme action collective ; la banalité du mal dans les processus bureaucratiques.
+- **Simone de Beauvoir** : les structures de domination dans les représentations du « naturel ».
+- **Chomsky** : grammaire profonde et grammaire de surface, appliquées à l'analyse des discours.
+- **Ivan Illich** : contre-productivité des institutions passé un seuil, monopole radical.
+- **Marshall McLuhan** : le medium est le message.
+- **Bourdieu** : capital symbolique, habitus, champ ; les comportements comme stratégies de distinction.
+
+**Penseurs disciplinaires**
+- **Shannon** : la théorie de l'information appliquée ; quel est le signal, quel est le bruit ?
+- **Feynman** : premiers principes, refus des analogies non fondées.
+- ~~Von Neumann / Nash~~ : fait, voir `skills/nash/`.
+
+**Personas (variante assumée)** : contrairement aux skills méthode, une persona encode le personnage, la méthode et le style. Plus caricatural, limites plus longues. Candidats : Churchill, Machiavel (version persona), Zizek, Socrate ironique.
+
+### 6. Installer hors de Claude Code
+
+Les skills sont du markdown pur ; l'objectif est une procédure minimale par plateforme.
+
+- **Gemini CLI** : format GEMINI.md et activation des skills, à tester et documenter.
+- **GPT personnalisés** : un GPT « ghost-council » qui charge les skills en instructions, ou un pack à coller dans les instructions personnalisées.
+- **OpenWebUI / Ollama** : des model files ou des prompts système préconfigurés.
+- **Raycast / Alfred** : un raccourci qui copie le contenu d'un skill.
+- **Script d'installation** : `curl … install.sh | bash`, qui copie les skills dans `~/.claude/skills/` ou l'équivalent.
 
 ---
 
 ## Qualité et rigueur
 
-- ~~**Doc EN manquante** : `docs/en/nash.md`~~ — faite le 2026-10-13
-- **Test cases par skill** : 2-3 inputs avec outputs attendus, pour vérifier que la méthode produit bien ce qu'elle doit
-- **Peer review** : invite des gens qui connaissent vraiment les philosophes à critiquer les encodages (les sections "limites connues" sont un bon point de départ)
-- **Versioning des skills** : `v1.0` dans le frontmatter, changelog si la méthode évolue
-- **Contradiction flag** : documenter quand deux skills sont incompatibles sur un même input (Popper vs Hegel sur la falsifiabilité de la dialectique, par exemple)
-
----
+- **Cas de test par skill** : 2 ou 3 entrées avec la sortie attendue, pour vérifier que la méthode produit ce qu'elle doit.
+- **Relecture par des connaisseurs** : faire critiquer les encodages par des gens qui connaissent vraiment les philosophes (les sections « limites connues » sont un bon point de départ).
+- **Versions des skills** : un numéro dans le frontmatter, un journal si la méthode évolue.
+- **Incompatibilités** : documenter quand deux skills se contredisent sur un même input (Popper contre Hegel sur la falsifiabilité de la dialectique, par exemple).
+- ~~Doc EN de Nash~~ : faite le 2026-10-13.
 
 ## Expériences à tenter
 
-- ~~Appliquer le conseil à une vraie décision~~ — fait le 2026-10-13 sur des décisions réelles, puis comparé à advisory-council (nzanepro) sur le même brief, à froid : mêmes conclusions de fond, `council` attrape les fuites de cadrage avant le tour pour environ un tiers de coût en moins ; advisory-council rend une conclusion plus nette grâce à son vote en deux tours.
-- Comparer les outputs du même skill sur GPT-4, Claude, Gemini — les divergences sont révélatrices
-- Faire évaluer les skills par des étudiants en philo — collecter les erreurs les plus fréquentes
+- Comparer les outputs d'un même skill sur Claude, GPT et Gemini : les divergences sont révélatrices.
+- Faire évaluer les skills par des étudiants en philosophie, et collecter les erreurs les plus fréquentes.
+- ~~Appliquer le conseil à une vraie décision~~ : fait le 2026-10-13, voir l'état ci-dessus.
+
+---
+
+## Pour les mainteneurs : le build
+
+`skills/` est la source de vérité ; `dist/` est le plugin, généré.
+
+- `python3 build.py` valide chaque `skills/<nom>/SKILL.md` (frontmatter `name` et `description` présents, `name` égal au nom du dossier), vide `dist/skills/` puis recopie tout depuis `skills/`, pour qu'un skill supprimé ne traîne pas dans `dist/`. Il copie aussi `LICENSE` et `THIRD_PARTY.md` dans `dist/`.
+- `python3 build.py --check` valide sans rien écrire.
+- Ne jamais éditer `dist/` à la main. Monter la version dans `dist/.claude-plugin/plugin.json` à chaque publication qui change le plugin, sinon `claude plugin update` ne voit rien.
+- Tests du conseil, depuis la racine du dépôt : `uvx pytest tests/`.
+- **Dépôt public** : aucun exemple tiré d'un cas réel (noms, dates, contexte), même pour illustrer une règle. Relire le diff comme un texte public avant chaque push.
 
 ---
 
 ## Références
 
-- [llm-council (Karpathy)](https://github.com/karpathy/llm-council) — délibération multi-agents, base pour `/council`
-- [Improving Factuality and Reasoning in Language Models through Multiagent Debate (Du et al., 2023)](https://arxiv.org/abs/2305.14325) — paper sur les débats LLM comme mécanisme de vérité
-- [advisory-council (nzanepro)](https://github.com/nzanepro/tvr-skills-agent-advisory-council) — MIT, base du script de `/council`, de son dossier et de son vérificateur (voir `THIRD_PARTY.md`)
-- [Constitutional AI (Anthropic)](https://arxiv.org/abs/2212.08073) — utilise des principes encodés pour guider le comportement, analogie avec les skills méthode
+- [llm-council (Karpathy)](https://github.com/karpathy/llm-council) : délibération entre plusieurs modèles, à l'origine de l'idée de `/council`.
+- [advisory-council (nzanepro)](https://github.com/nzanepro/tvr-skills-agent-advisory-council) : MIT, base du script de `/council`, de son dossier commun et de son vérificateur (voir `THIRD_PARTY.md`).
+- [Improving Factuality and Reasoning in Language Models through Multiagent Debate (Du et al., 2023)](https://arxiv.org/abs/2305.14325) : le débat entre modèles comme mécanisme de vérité.
+- [Constitutional AI (Anthropic)](https://arxiv.org/abs/2212.08073) : des principes encodés pour guider le comportement, analogie avec les skills méthode.

@@ -141,6 +141,7 @@ flowchart LR
 - [x] Cadrage préparé, relecture isolée, sièges de parties prenantes
 - [ ] Une section « ce qui compte pour le décideur », lue par l'arbitre
 - [ ] Un format `revue` : évaluation croisée anonymisée des avis
+- [ ] Les améliorations repérées en séance : un vote léger en `tour`, les séances de suivi
 - [ ] `/suggest` (quels ghosts pour ce problème ?) et `/evaluate` (un output a-t-il suivi la méthode ?)
 - [ ] De nouveaux esprits : Taleb, Munger, Kahneman, Arendt, Bourdieu, Feynman…
 - [ ] Une installation plus simple hors de Claude Code (Gemini CLI, GPT personnalisés)
