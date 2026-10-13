@@ -62,6 +62,8 @@ Le projet encode des méthodes philosophiques comme des opérations applicables 
 ---README-ROW---
 | [Nom] | [Solide/Fun] | [description ≤ 12 mots] | [docs/fr/nom.md] | [docs/en/nom.md] |
 ---END---
+
+(La ligne FR va dans le tableau Documentation de `README.fr.md` ; sa version anglaise, dans celui de `README.md`.)
 ```
 
 ---

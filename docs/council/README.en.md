@@ -106,7 +106,7 @@ Without a prefix, a name is looked up in the order `ghost:`, `costume:`, `ix:`. 
 
 ### 4.1 Ghosts: methods
 
-They attack the reasoning itself. Each performs **one operation**, documented in [the skills table](../../README.md#documentation-1).
+They attack the reasoning itself. Each performs **one operation**, documented in [the skills table](../../README.md#documentation).
 
 | To… | Useful ghosts |
 |---|---|

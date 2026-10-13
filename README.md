@@ -1,263 +1,167 @@
-# ghost-council
+<p align="center">
+  <img src="docs/assets/banner.svg" alt="ghost-council: philosophers' methods, not personas" width="100%">
+</p>
 
-> Socrate, Popper, Wittgenstein, Sartre et quelques autres encodés comme skills.
-> Sans costume. Juste la méthode.
+<p align="center">
+  <a href="LICENSE"><img alt="License" src="https://img.shields.io/github/license/amiel-35/ghost-council?color=8f8a7c"></a>
+  <img alt="Plugin version" src="https://img.shields.io/badge/dynamic/json?url=https%3A%2F%2Fraw.githubusercontent.com%2Famiel-35%2Fghost-council%2Fmain%2Fdist%2F.claude-plugin%2Fplugin.json&query=%24.version&label=plugin&color=c9a961">
+  <img alt="Claude Code" src="https://img.shields.io/badge/Claude%20Code-plugin-D97757">
+  <img alt="Skills" src="https://img.shields.io/badge/skills-26-4a5578">
+  <img alt="Python" src="https://img.shields.io/badge/python-3.9%2B-3776AB">
+  <img alt="Status" src="https://img.shields.io/badge/status-experimental-e07a3f">
+</p>
 
-[English below](#english)
-
----
-
-## Ce que contient ce dépôt
-
-Un seul plugin Claude Code, qui contient trois choses :
-
-1. **Les ghosts** : 23 méthodes de philosophes encodées comme skills, plus Zeus, un arbitre. Chacun fait une opération précise sur un texte, une décision ou un problème. → [Les ghosts](#les-ghosts)
-2. **Le conseil, `/council`** : fait délibérer ces méthodes, et d'autres angles, sur une décision pas encore prise, puis rend la carte des désaccords. → [Le conseil](#le-conseil--council) et son [guide complet](docs/council/README.md)
-3. **`doc-skill`** : un outil pour les contributeurs, qui génère la documentation FR et EN d'un skill.
-
-Et un projet frère, [ix-skills](#projet-frère--ix-skills), dont les postures peuvent siéger au conseil.
-
----
-
-## Installation
-
-Dans un terminal :
-
-```bash
-claude plugin marketplace add amiel-35/ghost-council
-claude plugin install ghost-council
-```
-
-Redémarre Claude Code : les ghosts et `/council` sont disponibles. Pour mettre à jour : `claude plugin marketplace update ghost-council` puis `claude plugin update ghost-council`.
-
-**Pour le conseil, facultatif mais recommandé** : installer aussi [ix-skills](https://github.com/amiel-35/ix-skills), dont les postures (dixième homme, contrarian, red team…) peuvent siéger avec `ix:` :
-
-```bash
-claude plugin marketplace add amiel-35/ix-skills
-claude plugin install ix-skills
-```
-
-Le conseil demande Python 3.9 ou plus récent, sans aucune bibliothèque à installer.
-
-**Sans plugin** : copier un dossier `skills/<nom>/` dans `~/.claude/skills/`. Les ghosts sont du markdown pur, utilisables aussi avec d'autres assistants (GPT, Gemini) en copiant leur `SKILL.md`.
+<p align="center">
+  <a href="#quick-start"><b>Quick start</b></a> ·
+  <a href="docs/council/README.en.md"><b>Council guide</b></a> ·
+  <a href="#documentation"><b>All skills</b></a> ·
+  <a href="https://github.com/amiel-35/ghost-council/issues"><b>Report an issue</b></a> ·
+  <a href="README.fr.md"><b>Français</b></a>
+</p>
 
 ---
 
-## Les ghosts
+<details>
+<summary><b>Table of contents</b></summary>
 
-Une collection de skills markdown. Chaque fichier encode la méthode d'un philosophe comme une opération applicable à un texte, une décision, un brief ou n'importe quel problème qui traîne.
+- [About](#about)
+- [Quick start](#quick-start)
+- [The ghosts](#the-ghosts)
+- [The council](#the-council)
+- [Sibling project: ix-skills](#sibling-project-ix-skills)
+- [Roadmap](#roadmap)
+- [Contributing](#contributing)
+- [License](#license)
+- [Acknowledgments](#acknowledgments)
+- [Documentation](#documentation)
 
-Le principe est simple : ces gens n'avaient pas que des opinions, ils avaient des *méthodes*. Popper cherche systématiquement comment invalider une hypothèse. Wittgenstein refuse d'avancer tant qu'un terme n'est pas proprement défini. Sartre détecte la mauvaise foi dans la façon dont on déguise ses choix en contraintes subies. Socrate pose des questions jusqu'à ce que la contradiction apparaisse.
+</details>
 
-Ces méthodes sont utiles. Le problème des "agents philosophiques" habituels, c'est qu'ils encodent le personnage, pas la méthode. Un prompt "tu es Kant" active de la biographie, de la vulgarisation et des associations floues. Ce n'est pas ce qu'on veut ici. Les skills encodent la méthode. Après, tu en fais ce que tu veux : seuls, ou ensemble au conseil.
+## About
 
-**Solides** (méthode formalisable, résistance à la formalisation faible) :
-Socrate, Platon, Aristote, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal, Épictète, Rawls, William James, Adam Smith, Montesquieu, Tocqueville, Nash
+Socrates, Popper, Wittgenstein, Sartre and a few others, encoded as skills. No costume. Just the method.
 
-**Fun** (posture forte, formalisation partielle) :
-Nietzsche, Machiavel, Freud, Darwin, Sun Tzu, Sartre, Marx
+These people didn't just have opinions, they had *methods*. Popper systematically looks for ways to invalidate a hypothesis. Wittgenstein refuses to move forward until every term is properly defined. Sartre detects bad faith, the way we disguise our own choices as constraints. Socrates keeps asking questions until the contradiction surfaces.
 
-**Arbitre** (pas de méthode propre, tranche entre les autres) :
-Zeus
+The problem with most "philosophical agents" is that they encode the character, not the method: a "you are Kant" prompt activates biography and fuzzy associations. Here, each skill encodes **one operation** you can run on a text, a decision, a brief or any problem.
 
-Chaque ghost a sa fiche dans le [tableau de documentation](#documentation) et une section « limites connues » dans son propre fichier. Les skills fun ont des sections plus longues : certains philosophes résistent à la formalisation, et c'est documenté honnêtement.
+This repository is one Claude Code plugin holding three things:
 
-### Structure d'un ghost
-
-```
-skills/[nom]/SKILL.md
-```
-
-- **Rôle** : l'opération concrète
-- **Règles absolues** : ce que la méthode ne négocie pas
-- **Méthode** : les étapes en verbes d'action
-- **Output attendu** : ce que ça produit
-- **Limites connues** : où ça foire
-
-### ⚠️ Avertissement
-
-Ce projet ne prétend pas être sérieux. Les skills sont **volontairement réducteurs et caricaturaux** : c'est une condition de leur utilisabilité, pas un oubli. Encoder Kant en dix verbes d'action, c'est trahir Kant. On le sait. C'est fait exprès.
-
-Les philosophes, professeurs de philosophie et penseurs qui passent par là sont **libres de critiquer, conseiller ou contribuer** pour améliorer la rigueur ou corriger les contresens. Les PR et les issues sont ouvertes pour ça.
-
----
-
-## Le conseil : `/council`
-
-Fait délibérer plusieurs **angles indépendants** sur une décision pas encore prise ; un arbitre rend ensuite la carte de ce qui converge et de ce qui s'oppose. Le conseil ne tranche pas : celui qui décide décide. **Expérimental** : les avis sont simulés, ils éclairent une décision, ils n'engagent personne.
-
-**Comment ça se passe.** Tu dis ce que tu veux décider. Claude cadre la question et te propose une grille d'angles ; tu la valides ; un relecteur isolé vérifie que le cadrage ne souffle pas de réponse ; chaque angle travaille seul dans son sous-agent, sans lire les autres ; un arbitre isolé rend la synthèse.
-
-**Cinq familles d'angles**, à mélanger :
-
-| Famille | Exemple | Ce que c'est |
+| | What it is | Where |
 |---|---|---|
-| `ghost:` | `ghost:popper` | une méthode philosophique de ce dépôt |
-| `ix:` | `ix:dixieme-homme` | une posture de raisonnement d'[ix-skills](https://github.com/amiel-35/ix-skills), s'il est installé |
-| `costume:` | `costume:humain` | une dimension métier qu'on risque d'oublier : financier, commercial, produit, marque, technique, humain, juridique |
-| `partie:` | `partie:client` | une partie prenante de cette décision, décrite dans une fiche propre à la séance |
-| `file:` | `file:<chemin>` | n'importe quel SKILL.md à toi |
+| **The ghosts** | 23 philosophers' methods, plus Zeus, an arbiter | [The ghosts](#the-ghosts) |
+| **The council** | `/council` makes methods and other angles deliberate on a decision, then returns the map of disagreements | [The council](#the-council), [full guide](docs/council/README.en.md) |
+| **doc-skill** | a contributor tool that writes a skill's FR and EN documentation | [skills/doc-skill](skills/doc-skill/SKILL.md) |
 
-**Trois formats** : `tour` (avis en parallèle, puis arbitre), `compare` (deux angles côte à côte, et ce que leur divergence révèle), `deliberation` (dossier commun, vérificateur, deux tours, vote). **Arbitre** : neutre par défaut, ou `adversarial`, Zeus, Nash, Aristote… toujours nommé. **Un modèle par siège** en option.
+## Quick start
 
-→ **[Le guide complet du conseil](docs/council/README.md)** : installation, séance pas à pas, définitions détaillées des costumes et des parties, formats, arbitres, cadrage, fichiers, script, questions fréquentes.
-
----
-
-## Projet frère : ix-skills
-
-[ix-skills](https://github.com/amiel-35/ix-skills) est l'autre collection du même auteur : des skills de travail (cadrage, critique, décision, revue de contrat, synthèse…) et des postures de raisonnement (dixième homme, contrarian, red team, premiers principes…). Les deux se complètent : ghost-council encode des méthodes de pensée, ix-skills des gestes de travail. `/council` les fait siéger ensemble : `ix:dixieme-homme` à côté de `ghost:popper`.
-
----
-
-## Statut et contribution
-
-Expérimental et clairement étiqueté comme tel. C'est autant un exercice intellectuel qu'un outil ; si l'idée t'intéresse, la liste des philosophes est ouverte.
-
-**Critère d'entrée d'un ghost** : une méthode formalisable en verbes d'action concrets. Si tu ne peux pas écrire la section « Méthode », le philosophe n'est probablement pas dans le scope. Voir le [guide pour écrire un skill](docs/guide-ecrire-un-skill.md).
-
-**Pour les mainteneurs** : `skills/` est la source de vérité, `dist/` est généré pour le plugin. Après toute modification dans `skills/`, lancer `python3 build.py` avant de commiter (voir [TODO.md](TODO.md#claude-code)). Les tests du script du conseil, depuis la racine du dépôt : `uvx pytest tests/` (ou `python3 -m pytest tests/`).
-
----
-
-## English
-
-> Socrates, Popper, Wittgenstein, Sartre and a few others encoded as skills. No costume. Just the method.
-
-### What's in this repository
-
-One Claude Code plugin, holding three things:
-
-1. **The ghosts**: 23 philosophers' methods encoded as skills, plus Zeus, an arbiter. Each one performs a precise operation on a text, a decision or a problem.
-2. **The council, `/council`**: makes these methods, and other angles, deliberate on a decision not yet taken, then returns the map of disagreements. See the [full council guide](docs/council/README.en.md).
-3. **`doc-skill`**: a contributor tool that generates a skill's FR and EN documentation.
-
-And a sibling project, ix-skills, whose postures can sit on the council.
-
-### Installation
-
-In a terminal:
+Install the plugin:
 
 ```bash
 claude plugin marketplace add amiel-35/ghost-council
 claude plugin install ghost-council
 ```
 
-Restart Claude Code: the ghosts and `/council` are available. To update: `claude plugin marketplace update ghost-council`, then `claude plugin update ghost-council`.
+Restart Claude Code, then just ask:
 
-**For the council, optional but recommended**: also install [ix-skills](https://github.com/amiel-35/ix-skills), whose postures (tenth man, contrarian, red team…) can sit with `ix:`:
+- *"Apply Popper to this plan: what would prove it wrong?"*
+- *"Use Wittgenstein on this brief: which terms are undefined?"*
+- *"Run a council on this decision: should we launch a paid tier this quarter?"*
+
+For the council, also install the sibling plugin [ix-skills](https://github.com/amiel-35/ix-skills) (optional, recommended), whose reasoning postures can sit on it:
 
 ```bash
 claude plugin marketplace add amiel-35/ix-skills
 claude plugin install ix-skills
 ```
 
-The council needs Python 3.9 or later, with no library to install.
+To update later: `claude plugin marketplace update ghost-council`, then `claude plugin update ghost-council`. Without the plugin, copy a `skills/<name>/` folder into `~/.claude/skills/`; the ghosts are plain markdown and also work with other assistants.
 
-**Without the plugin**: copy a `skills/<name>/` folder into `~/.claude/skills/`. The ghosts are plain markdown, also usable with other assistants (GPT, Gemini) by copying their `SKILL.md`.
+## The ghosts
 
-### The ghosts
-
-A collection of markdown skills. Each file encodes a philosopher's reasoning method as a concrete operation you can run on any text, decision, brief, or problem.
-
-The idea is simple: these people didn't just have opinions, they had *methods*. Popper systematically looks for ways to invalidate a hypothesis. Wittgenstein refuses to move forward until every term is properly defined. Sartre detects bad faith — the way we disguise our own choices as constraints. Socrates keeps asking questions until the contradiction surfaces.
-
-These methods are useful. The problem with most "philosophical agents" is that they encode the character, not the method. A "you are Kant" prompt activates biography, simplification, and fuzzy associations. That's not what we want here. The skills encode the method. Do with them what you want: alone, or together on the council.
-
-**Solid** (formalizable, low resistance to encoding):
+**Solid**: the method formalizes well.
 Socrates, Plato, Aristotle, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal, Epictetus, Rawls, William James, Adam Smith, Montesquieu, Tocqueville, Nash
 
-**Fun** (strong posture, partial formalization):
+**Fun**: strong posture, partial formalization.
 Nietzsche, Machiavelli, Freud, Darwin, Sun Tzu, Sartre, Marx
 
-**Arbiter** (no method of its own — settles between the others):
+**Arbiter**: no method of its own, settles between the others.
 Zeus
 
-Each ghost has its page in the [documentation table](#documentation-1) and a "known limits" section in its own file. Fun skills have longer ones — some philosophers resist formalization, and that's documented honestly.
+Every ghost follows the same structure in `skills/<name>/SKILL.md`: **role** (the concrete operation), **absolute rules** (what the method doesn't negotiate), **method** (steps as action verbs), **expected output**, **known limits**. One page per ghost in the [documentation table](#documentation).
 
-#### Structure of a ghost
+> [!WARNING]
+> This project does not take itself seriously. The skills are **deliberately reductive**: encoding Kant in ten action verbs betrays Kant. We know. It's intentional. Philosophers and teachers are welcome to criticize or fix misrepresentations: issues and PRs are open for that.
 
+## The council
+
+`/council` makes several **independent** angles deliberate on a decision not yet taken. Each angle works alone, in a fresh context, without reading the others or knowing what you hope for. An isolated arbiter then returns what converges, what clashes and why, what nobody looked at, and the question left to settle. **The council doesn't decide: you do.**
+
+```mermaid
+flowchart LR
+    Q([Your decision]) --> C[Framing<br/>CADRAGE.md + GRILLE.md]
+    C --> R{Isolated<br/>review}
+    R -- needs fixes --> C
+    R -- ready --> T
+    subgraph T [Each angle alone, in its own subagent]
+        direction TB
+        A1[ghost:popper]
+        A2[costume:humain]
+        A3[partie:client]
+        A4[ix:contrarian]
+    end
+    T --> S[Isolated arbiter<br/>map of disagreements]
+    S --> D([You decide])
 ```
-skills/[name]/SKILL.md
-```
-
-- **Role**: the concrete operation
-- **Absolute rules**: what the method doesn't negotiate
-- **Method**: steps as action verbs
-- **Expected output**: what it produces
-- **Known limits**: where it breaks
-
-#### ⚠️ Disclaimer
-
-This project does not take itself seriously. The skills are **deliberately reductive and caricatural** — that's a condition of their usability, not an oversight. Encoding Kant in ten action verbs betrays Kant. We know. It's intentional.
-
-Philosophers, philosophy teachers, and thinkers who stumble upon this are **welcome to criticize, advise, or contribute** to improve rigor or fix misrepresentations. PRs and issues are open for exactly that.
-
-### The council: `/council`
-
-Makes several **independent** angles deliberate on a decision not yet taken; an arbiter then returns the map of what converges and what clashes. The council does not decide: the decision owner does. **Experimental**: the opinions are simulated; they inform a decision, they commit no one.
-
-**How it goes.** You say what you want to decide. Claude frames the question and proposes a grid of angles; you validate it; an isolated reviewer checks the framing doesn't hint at an answer; each angle works alone in its own subagent, without reading the others; an isolated arbiter writes the synthesis.
 
 **Five families of angles**, to be mixed:
 
 | Family | Example | What it is |
 |---|---|---|
 | `ghost:` | `ghost:popper` | a philosophical method from this repo |
-| `ix:` | `ix:dixieme-homme` | a reasoning posture from [ix-skills](https://github.com/amiel-35/ix-skills), when installed |
+| `ix:` | `ix:dixieme-homme` | a reasoning posture from [ix-skills](https://github.com/amiel-35/ix-skills) |
 | `costume:` | `costume:humain` | a business dimension that's easy to forget: finance, sales, product, brand, tech, people, legal |
-| `partie:` | `partie:client` | a stakeholder in this decision, described in a card written for the session |
+| `partie:` | `partie:client` | a stakeholder in this decision, with a card written for the session |
 | `file:` | `file:<path>` | any SKILL.md of your own |
 
-**Three formats**: `tour` (parallel opinions, then the arbiter), `compare` (two angles side by side, and what their divergence reveals), `deliberation` (shared dossier, verifier, two rounds, vote). **Arbiter**: neutral by default, or `adversarial`, Zeus, Nash, Aristotle… always named. **One model per seat**, optional. The skill itself is written in French.
+**Three formats**: `tour` (parallel opinions, then the arbiter), `compare` (two angles side by side), `deliberation` (shared dossier, fact-checker, two rounds and a vote). **Arbiter**: neutral by default, or adversarial, Zeus, Nash, Aristotle. **One model per seat** if you want. A dependency-free Python script keeps the session paperwork and checks the process; it calls no model.
 
-→ **[The full council guide](docs/council/README.en.md)**: installation, a session step by step, detailed definitions of costumes and stakeholders, formats, arbiters, framing, files, script, FAQ.
+> [!NOTE]
+> Experimental. The opinions are simulated: they inform a decision, they commit no one, and they don't replace a real expert. The skill itself is written in French.
 
-### Sibling project: ix-skills
+**→ [The full council guide](docs/council/README.en.md)**: installation, a session step by step, detailed definitions of every costume and of stakeholder cards, formats, arbiters, framing, files, script, FAQ.
 
-[ix-skills](https://github.com/amiel-35/ix-skills) is the author's other collection: working skills (scoping, critique, decision, contract review, synthesis…) and reasoning postures (tenth man, contrarian, red team, first principles…). They complement each other: ghost-council encodes ways of thinking, ix-skills ways of working. `/council` seats them together — `ix:dixieme-homme` next to `ghost:popper`.
+## Sibling project: ix-skills
 
-### Status and contributing
+[ix-skills](https://github.com/amiel-35/ix-skills) is the author's other collection: working skills (scoping, critique, decision, contract review, synthesis…) and reasoning postures (tenth man, contrarian, red team, first principles…). ghost-council encodes ways of thinking, ix-skills ways of working; `/council` seats them side by side.
 
-Experimental, clearly labeled as such. As much an intellectual exercise as a tool — if the idea interests you, the philosopher list is open.
+## Roadmap
 
-**Entry criterion for a ghost**: a method that can be formalized in concrete action verbs. If you can't write the "Method" section, the philosopher is probably out of scope. See the [guide to writing a skill](docs/guide-ecrire-un-skill.md#writing-a-skill-for-ghost-council).
+- [x] `/council`, with `compare` and `deliberation` formats
+- [x] Prepared framing, isolated review, stakeholder seats
+- [ ] A "what matters to the decision owner" section, read by the arbiter
+- [ ] A `revue` format: anonymized cross-review of the opinions
+- [ ] `/suggest` (which ghosts for this problem?) and `/evaluate` (did an output follow the method?)
+- [ ] New minds: Taleb, Munger, Kahneman, Arendt, Bourdieu, Feynman…
+- [ ] Easier install outside Claude Code (Gemini CLI, custom GPTs)
 
-**For maintainers**: `skills/` is the source of truth, `dist/` is generated for the plugin. After any change under `skills/`, run `python3 build.py` before committing. Tests for the council script, from the repository root: `uvx pytest tests/` (or `python3 -m pytest tests/`).
+Details in [TODO.md](TODO.md).
 
----
+## Contributing
 
-## Documentation
+**Entry criterion for a ghost**: a method that can be written as concrete action verbs. If you can't write the "Method" section, the philosopher is probably out of scope. See the [guide to writing a skill](docs/guide-ecrire-un-skill.md#writing-a-skill-for-ghost-council).
 
-| Skill | Catégorie | Description | Doc FR | Doc EN |
-|-------|-----------|-------------|--------|--------|
-| Socrate | Solide | Fait émerger les contradictions par questionnement systématique | [FR](docs/fr/socrate.md) | [EN](docs/en/socrate.md) |
-| Platon | Solide | Remonte du concret vers la forme idéale avec sa dimension normative | [FR](docs/fr/platon.md) | [EN](docs/en/platon.md) |
-| Aristote | Solide | Observe, classe, puis théorise — empirisme bottom-up | [FR](docs/fr/aristote.md) | [EN](docs/en/aristote.md) |
-| Descartes | Solide | Rend explicites les hypothèses implicites avant toute décision | [FR](docs/fr/descartes.md) | [EN](docs/en/descartes.md) |
-| Kant | Solide | Évalue une décision à l'aune de l'impératif catégorique | [FR](docs/fr/kant.md) | [EN](docs/en/kant.md) |
-| Popper | Solide | Cherche à invalider plutôt qu'à confirmer une hypothèse | [FR](docs/fr/popper.md) | [EN](docs/en/popper.md) |
-| Wittgenstein | Solide | Dissout les pseudo-problèmes par la clarté du langage | [FR](docs/fr/wittgenstein.md) | [EN](docs/en/wittgenstein.md) |
-| Hegel | Solide | Construit une synthèse qui dépasse la tension entre deux positions | [FR](docs/fr/hegel.md) | [EN](docs/en/hegel.md) |
-| Pascal | Solide | Risk assessment fondé sur l'asymétrie des enjeux sous incertitude | [FR](docs/fr/pascal.md) | [EN](docs/en/pascal.md) |
-| Épictète | Solide | Coupe ce qui est en ton pouvoir de ce qui ne l'est pas | [FR](docs/fr/epictete.md) | [EN](docs/en/epictete.md) |
-| Rawls | Solide | Évalue une règle depuis la position la plus défavorisée | [FR](docs/fr/rawls.md) | [EN](docs/en/rawls.md) |
-| William James | Solide | Court-circuite les débats abstraits par la différence pratique | [FR](docs/fr/william-james.md) | [EN](docs/en/william-james.md) |
-| Adam Smith | Solide | Identifie les mécanismes d'incentives qui produisent les comportements | [FR](docs/fr/adam-smith.md) | [EN](docs/en/adam-smith.md) |
-| Montesquieu | Solide | Vérifie si une règle est adaptée à son contexte réel | [FR](docs/fr/montesquieu.md) | [EN](docs/en/montesquieu.md) |
-| Tocqueville | Solide | Identifie les tensions structurelles et leurs trajectoires longues | [FR](docs/fr/tocqueville.md) | [EN](docs/en/tocqueville.md) |
-| Nietzsche | Fun | Trace la généalogie des valeurs pour révéler les intérêts masqués | [FR](docs/fr/nietzsche.md) | [EN](docs/en/nietzsche.md) |
-| Machiavel | Fun | Cartographie les rapports de force réels sans les gants | [FR](docs/fr/machiavel.md) | [EN](docs/en/machiavel.md) |
-| Freud | Fun | Lit ce qui est voulu derrière ce qui est dit | [FR](docs/fr/freud.md) | [EN](docs/en/freud.md) |
-| Darwin | Fun | Analyse ce qui survit dans un environnement de sélection donné | [FR](docs/fr/darwin.md) | [EN](docs/en/darwin.md) |
-| Sun Tzu | Fun | Trouve l'asymétrie plutôt qu'attaquer frontalement | [FR](docs/fr/sun-tzu.md) | [EN](docs/en/sun-tzu.md) |
-| Sartre | Fun | Détecte la mauvaise foi et retourne les pseudo-contraintes | [FR](docs/fr/sartre.md) | [EN](docs/en/sartre.md) |
-| Marx | Fun | Lit les rapports de domination derrière les discours d'intérêt universel | [FR](docs/fr/marx.md) | [EN](docs/en/marx.md) |
-| Nash | Solide | Modélise une situation comme un jeu, cherche l'équilibre de Nash et son écart à l'optimum collectif | [FR](docs/fr/nash.md) | [EN](docs/en/nash.md) |
-| Zeus | Arbitre | Arbitre les outputs du conseil : convergences, contradictions irréductibles, tranche | [FR](docs/fr/zeus.md) | [EN](docs/en/zeus.md) |
-| council | Conseil | Fait délibérer des angles indépendants, rend la carte des désaccords | [FR](docs/fr/council.md) | [EN](docs/en/council.md) |
+**Maintainers**: `skills/` is the source of truth; `dist/` is generated for the plugin. After any change under `skills/`, run `python3 build.py`. Council tests, from the repository root: `uvx pytest tests/` (or `python3 -m pytest tests/`).
 
----
+## License
+
+MIT, see [LICENSE](LICENSE). Parts of the council script, its templates and guides are adapted from a third-party MIT project, see [THIRD_PARTY.md](THIRD_PARTY.md).
+
+## Acknowledgments
+
+- [advisory-council](https://github.com/nzanepro/tvr-skills-agent-advisory-council) by nzanepro: the base of the council script, its shared dossier, fact-checker and second round.
+- [llm-council](https://github.com/karpathy/llm-council) by Andrej Karpathy: multi-model deliberation.
+- [Improving Factuality and Reasoning in Language Models through Multiagent Debate](https://arxiv.org/abs/2305.14325) (Du et al., 2023).
 
 ## Documentation
 

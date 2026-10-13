@@ -2,7 +2,7 @@
 name: doc-skill
 description: >
   Génère la documentation complète d'un skill ghost-council (FR + EN) et met à jour
-  le tableau README. Usage : /doc-skill [nom-du-philosophe]
+  les tableaux des README (FR et EN). Usage : /doc-skill [nom-du-philosophe]
 ---
 
 # doc-skill
@@ -11,7 +11,7 @@ description: >
 
 Tu génères la documentation d'un skill ghost-council à partir de son SKILL.md.
 Tu crées deux fichiers de doc (FR + EN) conformes au template, et tu ajoutes la ligne
-correspondante dans les deux tableaux du README.
+correspondante dans le tableau Documentation de `README.fr.md` (FR) et de `README.md` (EN).
 
 ## Règles absolues
 
@@ -28,7 +28,7 @@ correspondante dans les deux tableaux du README.
 3. Lire `docs/TEMPLATE.md` pour respecter la structure exacte
 4. Générer `docs/fr/[nom].md` en français, sections dans l'ordre du template
 5. Générer `docs/en/[nom].md` en anglais, reformulé pour public anglophone
-6. Lire `README.md`, localiser les deux tableaux Documentation (FR et EN)
+6. Lire `README.fr.md` et `README.md`, localiser le tableau Documentation de chacun
 7. Vérifier que le skill n'a pas déjà une ligne dans ces tableaux
 8. Ajouter la ligne dans chaque tableau :
    `| [Nom] | [Solide/Fun] | [description ≤ 12 mots] | [lien fr] | [lien en] |`
@@ -39,4 +39,4 @@ correspondante dans les deux tableaux du README.
 3 fichiers modifiés :
 - `docs/fr/[nom].md` — documentation en français
 - `docs/en/[nom].md` — documentation en anglais
-- `README.md` — ligne ajoutée dans les deux tableaux Documentation
+- `README.fr.md` et `README.md` — une ligne ajoutée dans le tableau Documentation de chacun

@@ -1,0 +1,47 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1280 320" width="1280" height="320" role="img" aria-labelledby="t d">
+  <title id="t">ghost-council</title>
+  <desc id="d">A council table: seven seats, each a reasoning method, around an arbiter.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#14161f"/>
+      <stop offset="1" stop-color="#232838"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.5">
+      <stop offset="0" stop-color="#e8d9b0" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#e8d9b0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect width="1280" height="320" fill="url(#bg)"/>
+
+  <!-- la table : sept sièges autour de l'arbitre -->
+  <g transform="translate(250 160)">
+    <circle r="118" fill="url(#glow)"/>
+    <circle r="92" fill="none" stroke="#e8d9b0" stroke-opacity="0.18" stroke-width="1.5" stroke-dasharray="3 7"/>
+    <g fill="#14161f" stroke="#e8d9b0" stroke-width="2">
+      <circle cx="0" cy="-92" r="15"/>
+      <circle cx="71.9" cy="-57.4" r="15"/>
+      <circle cx="89.7" cy="20.5" r="15"/>
+      <circle cx="39.9" cy="82.9" r="15"/>
+      <circle cx="-39.9" cy="82.9" r="15"/>
+      <circle cx="-89.7" cy="20.5" r="15"/>
+      <circle cx="-71.9" cy="-57.4" r="15"/>
+    </g>
+    <g stroke="#e8d9b0" stroke-opacity="0.25" stroke-width="1">
+      <line x1="0" y1="-74" x2="0" y2="-30"/>
+      <line x1="57.8" y1="-46.1" x2="23.4" y2="-18.7"/>
+      <line x1="72.1" y1="16.5" x2="29.2" y2="6.7"/>
+      <line x1="32.1" y1="66.6" x2="13" y2="27"/>
+      <line x1="-32.1" y1="66.6" x2="-13" y2="27"/>
+      <line x1="-72.1" y1="16.5" x2="-29.2" y2="6.7"/>
+      <line x1="-57.8" y1="-46.1" x2="-23.4" y2="-18.7"/>
+    </g>
+    <circle r="26" fill="#e8d9b0"/>
+    <circle r="26" fill="none" stroke="#14161f" stroke-width="3" stroke-opacity="0.3"/>
+  </g>
+
+  <g font-family="Georgia, 'Times New Roman', serif">
+    <text x="440" y="150" font-size="74" fill="#f4ecd8" letter-spacing="1">ghost-council</text>
+    <text x="443" y="198" font-size="26" fill="#c9bfa5" font-style="italic">Philosophers' methods, not personas.</text>
+    <text x="443" y="238" font-size="20" fill="#8f8a7c">Reasoning skills for Claude Code, and a council that makes them deliberate.</text>
+  </g>
+</svg>

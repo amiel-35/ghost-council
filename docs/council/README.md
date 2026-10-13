@@ -106,7 +106,7 @@ Sans préfixe, un nom est cherché dans l'ordre `ghost:`, `costume:`, `ix:`. Une
 
 ### 4.1 Les ghosts : des méthodes
 
-Ils attaquent le raisonnement lui-même. Chacun fait **une opération**, documentée dans [la table des skills](../../README.md#documentation).
+Ils attaquent le raisonnement lui-même. Chacun fait **une opération**, documentée dans [la table des skills](../../README.fr.md#documentation).
 
 | Pour… | Ghosts utiles |
 |---|---|
