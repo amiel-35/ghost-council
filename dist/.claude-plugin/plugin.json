@@ -1,0 +1,10 @@
+{
+  "name": "ghost-council",
+  "description": "Des philosophes encodés comme skills — la méthode, pas le personnage. Socrate, Popper, Wittgenstein, Sartre et une vingtaine d'autres.",
+  "version": "0.1.0",
+  "author": {
+    "name": "Amiel Lavon"
+  },
+  "homepage": "https://github.com/amiel-35/ghost-council",
+  "license": "MIT"
+}

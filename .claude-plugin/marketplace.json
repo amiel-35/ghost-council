@@ -1,0 +1,14 @@
+{
+  "name": "ghost-council",
+  "description": "Des philosophes encodés comme skills — la méthode, pas le personnage.",
+  "owner": {
+    "name": "Amiel Lavon"
+  },
+  "plugins": [
+    {
+      "name": "ghost-council",
+      "source": "./dist",
+      "description": "Des philosophes encodés comme skills — la méthode, pas le personnage."
+    }
+  ]
+}

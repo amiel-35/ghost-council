@@ -22,10 +22,13 @@ Les skills encodent la méthode. Après, tu en fais ce que tu veux.
 ## Les skills
 
 **Solides** (méthode formalisable, résistance à la formalisation faible) :
-Socrate, Platon, Aristote, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal
+Socrate, Platon, Aristote, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal, Nash
 
 **Fun** (posture forte, formalisation partielle) :
 Nietzsche, Machiavel, Freud, Darwin, Sun Tzu, Sartre
+
+**Arbitre** (pas de méthode propre — tranche entre les autres) :
+Zeus
 
 Chaque skill a une section "limites connues" dans son propre fichier. Les skills fun ont des sections plus longues — certains philosophes résistent à la formalisation, et c'est documenté honnêtement.
 
@@ -44,6 +47,22 @@ skills/[nom]/SKILL.md
 - **Limites connues** : où ça foire
 
 Markdown pur. Portable Claude, GPT, Gemini.
+
+---
+
+## Installation
+
+**Claude Code (plugin marketplace)** :
+```bash
+claude plugin marketplace add amiel-35/ghost-council
+claude plugin install ghost-council
+```
+
+**Claude Code (manuel)** : copier `skills/[nom]/` dans `~/.claude/skills/`.
+
+**Maintainers** : `skills/` est la source de vérité, `dist/` est généré pour le plugin.
+Après toute modification dans `skills/`, lancer `python3 build.py` avant de commit
+(voir [TODO.md](TODO.md#claude-code) pour le détail).
 
 ---
 
@@ -80,10 +99,13 @@ The skills encode the method. Do with them what you want.
 ### Skills
 
 **Solid** (formalizable, low resistance to encoding) :
-Socrates, Plato, Aristotle, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal
+Socrates, Plato, Aristotle, Descartes, Popper, Wittgenstein, Hegel, Kant, Pascal, Nash
 
 **Fun** (strong posture, partial formalization) :
 Nietzsche, Machiavel, Freud, Darwin, Sun Tzu, Sartre
+
+**Arbiter** (no method of its own — settles between the others) :
+Zeus
 
 Each skill has a "known limits" section in its own file. Fun skills have longer ones — some philosophers resist formalization, and that's documented honestly.
 
@@ -100,6 +122,19 @@ skills/[name]/SKILL.md
 - **Known limits** : where it breaks
 
 Plain markdown. Portable across Claude, GPT, Gemini.
+
+### Installation
+
+**Claude Code (plugin marketplace)**:
+```bash
+claude plugin marketplace add amiel-35/ghost-council
+claude plugin install ghost-council
+```
+
+**Claude Code (manual)**: copy `skills/[name]/` into `~/.claude/skills/`.
+
+**Maintainers**: `skills/` is the source of truth, `dist/` is generated for the plugin.
+After any change under `skills/`, run `python3 build.py` before committing.
 
 ### ⚠️ Disclaimer
 
@@ -143,6 +178,8 @@ Entry criterion: formalizable method in concrete action verbs. If you can't writ
 | Sun Tzu | Fun | Trouve l'asymétrie plutôt qu'attaquer frontalement | [FR](docs/fr/sun-tzu.md) | [EN](docs/en/sun-tzu.md) |
 | Sartre | Fun | Détecte la mauvaise foi et retourne les pseudo-contraintes | [FR](docs/fr/sartre.md) | [EN](docs/en/sartre.md) |
 | Marx | Fun | Lit les rapports de domination derrière les discours d'intérêt universel | [FR](docs/fr/marx.md) | [EN](docs/en/marx.md) |
+| Nash | Solide | Modélise une situation comme un jeu, cherche l'équilibre de Nash et son écart à l'optimum collectif | [FR](docs/fr/nash.md) | EN manquant |
+| Zeus | Arbitre | Arbitre les outputs du conseil : convergences, contradictions irréductibles, tranche | [FR](docs/fr/zeus.md) | [EN](docs/en/zeus.md) |
 
 ---
 
@@ -172,3 +209,5 @@ Entry criterion: formalizable method in concrete action verbs. If you can't writ
 | Sun Tzu | Fun | Finds the asymmetry rather than attacking head-on | [FR](docs/fr/sun-tzu.md) | [EN](docs/en/sun-tzu.md) |
 | Sartre | Fun | Detects bad faith and reverses pseudo-constraints | [FR](docs/fr/sartre.md) | [EN](docs/en/sartre.md) |
 | Marx | Fun | Reads domination relations behind universal interest discourses | [FR](docs/fr/marx.md) | [EN](docs/en/marx.md) |
+| Nash | Solid | Models a situation as a game, finds the Nash equilibrium and its gap to the collective optimum | [FR](docs/fr/nash.md) | EN missing |
+| Zeus | Arbiter | Arbitrates council outputs: convergences, irreducible contradictions, rules on the question | [FR](docs/fr/zeus.md) | [EN](docs/en/zeus.md) |

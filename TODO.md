@@ -20,7 +20,7 @@ Idées en vrac, non ordonnées. Certaines sont simples, d'autres sont des projet
 ### Penseurs disciplinaires (hors philo pure)
 - **Shannon** — information theory appliquée : quel est le signal, quel est le bruit ?
 - **Feynman** — first principles thinking, refuse les analogies non fondées
-- **Von Neumann / Nash** — théorie des jeux, équilibre, stratégie sous information imparfaite
+- ~~Von Neumann / Nash~~ — fait, voir `skills/nash/`
 
 ### Personas (variante assumée)
 Contrairement aux skills méthode, les personas encodent le personnage + la méthode + le style.
@@ -30,6 +30,12 @@ Candidats : Churchill, Machiavel (version persona vs méthode existante), Zizek,
 ---
 
 ## Outils à construire
+
+**État** : les 4 outils ci-dessous existent déjà en `draft` complet dans `drafts/`
+(usage, paramètres, format d'output rédigés) — bloqués par des questions ouvertes
+documentées en bas de chaque fichier, pas par un manque de conception.
+`skills/zeus/` (arbitre par défaut) et `skills/nash/` (arbitre stratégique) sont
+déjà codés et documentés ; il ne manque que l'orchestration elle-même.
 
 ### `/council [question]` — faire débattre les ghosts
 Prompt qui soumet une question à plusieurs philosophes simultanément, puis arbitre les divergences.
@@ -70,9 +76,21 @@ Objectif : one-liner ou procédure minimale par plateforme.
 
 ### Claude Code
 ```bash
-# Déjà fonctionnel via skills/
-# À documenter clairement dans README
+# Fonctionnel via skills/ (copie manuelle dans ~/.claude/skills/)
+# Déployable en plugin marketplace depuis 2026-08-29 :
+# dist/ + .claude-plugin/marketplace.json (cf. ix-skills pour le modèle)
+claude plugin marketplace add amiel-35/ghost-council
 ```
+`dist/skills/` est généré depuis `skills/` par `build.py` — voir §Build ci-dessous.
+Ne jamais éditer `dist/skills/` à la main, il est écrasé au prochain `python3 build.py`.
+
+**Build** : `python3 build.py` valide chaque `skills/<nom>/SKILL.md` (frontmatter
+`name`/`description` présent, `name` cohérent avec le nom du dossier), vide
+`dist/skills/` puis recopie tout depuis `skills/` — pour qu'un skill supprimé
+de `skills/` ne traîne pas dans `dist/`. `python3 build.py --check` valide sans
+écrire (dry-run, utile avant un commit ou en CI). Contrairement à `build.py` chez
+ix-skills, pas de transformation de frontmatter : `skills/<nom>/SKILL.md` est déjà
+au format cible, donc c'est une pure resynchronisation, pas une compilation.
 
 ### Gemini CLI
 - Format GEMINI.md + skill activation — à tester et documenter
@@ -98,6 +116,7 @@ curl -s https://raw.githubusercontent.com/.../install.sh | bash
 
 ## Qualité et rigueur
 
+- **Doc EN manquante** : `docs/en/nash.md` n'existe pas (seul le FR a été généré) — à corriger avec `/doc-skill nash`
 - **Test cases par skill** : 2-3 inputs avec outputs attendus, pour vérifier que la méthode produit bien ce qu'elle doit
 - **Peer review** : invite des gens qui connaissent vraiment les philosophes à critiquer les encodages (les sections "limites connues" sont un bon point de départ)
 - **Versioning des skills** : `v1.0` dans le frontmatter, changelog si la méthode évolue
