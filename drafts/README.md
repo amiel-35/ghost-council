@@ -10,10 +10,11 @@ philosophiques : ils opèrent sur le conseil lui-même, pas sur un problème dir
 
 | Skill | Statut | Description |
 |---|---|---|
-| [`/council`](council/SKILL.md) | draft | Soumet une question à plusieurs ghosts, arbitre les divergences |
-| [`/compare`](compare/SKILL.md) | draft | Confronte deux ghosts sur le même input |
 | [`/suggest`](suggest/SKILL.md) | draft | Recommande quels ghosts invoquer pour un problème |
 | [`/evaluate`](evaluate/SKILL.md) | draft | Vérifie qu'un output a bien suivi la méthode annoncée |
+
+`/council` et `/compare` sont sortis des drafts le 2026-10-13 : ils vivent dans
+[`skills/council/`](../skills/council/SKILL.md), `/compare` comme format (`--format compare`).
 
 ---
 
