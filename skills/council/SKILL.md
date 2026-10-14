@@ -61,7 +61,7 @@ par une **référence**, que le script résout en chemin à lire :
 | Référence | Ce que c'est | Résolu vers |
 |---|---|---|
 | `ghost:popper` | un ghost de cette collection : une méthode philosophique | `skills/popper/SKILL.md`, à côté de ce skill |
-| `ix:dixieme-homme` | une posture d'ix-skills (`dixieme-homme`, `contrarian`, `red-team`, `key-assumptions`, `firstprinciples`, `outside-in`, `executor`, `expansionist`, `outsider`...) | le premier dossier qui l'a dans `COUNCIL_ANGLES_PATH` (défaut : le cache du plugin ix-skills, version la plus haute) |
+| `ix:dixieme-homme` | une posture d'ix-skills (`dixieme-homme`, `contrarian`, `red-team`, `key-assumptions`, `firstprinciples`, `outside-in`, `executor`, `expansionist`, `outsider`...) | le premier dossier qui l'a dans `COUNCIL_ANGLES_PATH` (défaut : le cache du plugin ix-skills, quelle que soit sa marketplace, version la plus haute) |
 | `costume:humain` | une dimension métier qu'on risque d'oublier | la section `## Humain` de `references/angles/costumes.md` |
 | `partie:client` | une partie prenante : quelqu'un que la décision touche (qui gagne, paie, opère, bloque, subit) | sa fiche `## client` dans `PARTIES.md`, écrite pour la séance |
 | `file:<chemin>` | n'importe quel SKILL.md | ce fichier |

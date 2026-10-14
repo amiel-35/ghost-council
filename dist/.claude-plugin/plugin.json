@@ -1,7 +1,7 @@
 {
   "name": "ghost-council",
   "description": "Des philosophes encodés comme skills — la méthode, pas le personnage. Socrate, Popper, Wittgenstein, Sartre et une vingtaine d'autres, et /council pour les faire délibérer.",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "author": {
     "name": "Amiel Lavon"
   },

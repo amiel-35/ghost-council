@@ -90,7 +90,9 @@ TEMPLATE_DIR = REFERENCES_DIR / "templates"
 BRIEF_DIR = TEMPLATE_DIR / "briefs"
 SECTION_FILES = {"costume": REFERENCES_DIR / "angles" / "costumes.md",
                  "arbitre": REFERENCES_DIR / "angles" / "arbitres.md"}
-DEFAULT_ANGLES_PATH = "~/.claude/plugins/cache/ix-skills/ix-skills/*/skills"
+# ix-skills installé depuis sa propre marketplace (cache/ix-skills/…) ou depuis le
+# catalogue amiel-35/plugins (cache/amiel-35/…) : le motif couvre les deux.
+DEFAULT_ANGLES_PATH = "~/.claude/plugins/cache/*/ix-skills/*/skills"
 
 
 class CouncilError(Exception):

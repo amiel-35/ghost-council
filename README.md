@@ -59,7 +59,7 @@ Install the plugin:
 
 ```bash
 claude plugin marketplace add amiel-35/ghost-council
-claude plugin install ghost-council
+claude plugin install ghost-council@ghost-council
 ```
 
 Restart Claude Code, then just ask:
@@ -72,10 +72,12 @@ For the council, also install the sibling plugin [ix-skills](https://github.com/
 
 ```bash
 claude plugin marketplace add amiel-35/ix-skills
-claude plugin install ix-skills
+claude plugin install ix-skills@ix-skills
 ```
 
-To update later: `claude plugin marketplace update ghost-council`, then `claude plugin update ghost-council`. Without the plugin, copy a `skills/<name>/` folder into `~/.claude/skills/`; the ghosts are plain markdown and also work with other assistants.
+The author's plugins (ix-skills, ix-recipes, ghost-council) are also listed together in one marketplace, [amiel-35/plugins](https://github.com/amiel-35/plugins): `claude plugin marketplace add amiel-35/plugins`, then `claude plugin install ghost-council@amiel-35`. Install a plugin from one marketplace only; the council finds ix-skills either way.
+
+To update later: `claude plugin marketplace update ghost-council`, then `claude plugin update ghost-council@ghost-council`. Without the plugin, copy a `skills/<name>/` folder into `~/.claude/skills/`; the ghosts are plain markdown and also work with other assistants.
 
 ## The ghosts
 
@@ -133,7 +135,7 @@ flowchart LR
 
 ## Sibling project: ix-skills
 
-[ix-skills](https://github.com/amiel-35/ix-skills) is the author's other collection: working skills (scoping, critique, decision, contract review, synthesis…) and reasoning postures (tenth man, contrarian, red team, first principles…). ghost-council encodes ways of thinking, ix-skills ways of working; `/council` seats them side by side.
+[ix-skills](https://github.com/amiel-35/ix-skills) is the author's other collection: working skills (scoping, critique, decision, fact-checking, synthesis…) and reasoning postures (tenth man, contrarian, red team, first principles…). ghost-council encodes ways of thinking, ix-skills ways of working; `/council` seats them side by side.
 
 ## Roadmap
 

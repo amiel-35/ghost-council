@@ -59,7 +59,7 @@ Installer le plugin :
 
 ```bash
 claude plugin marketplace add amiel-35/ghost-council
-claude plugin install ghost-council
+claude plugin install ghost-council@ghost-council
 ```
 
 Redémarre Claude Code, puis demande simplement :
@@ -72,10 +72,12 @@ Pour le conseil, installer aussi le plugin frère [ix-skills](https://github.com
 
 ```bash
 claude plugin marketplace add amiel-35/ix-skills
-claude plugin install ix-skills
+claude plugin install ix-skills@ix-skills
 ```
 
-Pour mettre à jour : `claude plugin marketplace update ghost-council`, puis `claude plugin update ghost-council`. Sans plugin, copier un dossier `skills/<nom>/` dans `~/.claude/skills/` ; les ghosts sont du markdown pur et marchent aussi avec d'autres assistants.
+Les plugins de l'auteur (ix-skills, ix-recipes, ghost-council) sont aussi réunis dans une seule marketplace, [amiel-35/plugins](https://github.com/amiel-35/plugins) : `claude plugin marketplace add amiel-35/plugins`, puis `claude plugin install ghost-council@amiel-35`. Installer un plugin depuis une seule marketplace ; le conseil trouve ix-skills dans les deux cas.
+
+Pour mettre à jour : `claude plugin marketplace update ghost-council`, puis `claude plugin update ghost-council@ghost-council`. Sans plugin, copier un dossier `skills/<nom>/` dans `~/.claude/skills/` ; les ghosts sont du markdown pur et marchent aussi avec d'autres assistants.
 
 ## Les ghosts
 
@@ -133,7 +135,7 @@ flowchart LR
 
 ## Projet frère : ix-skills
 
-[ix-skills](https://github.com/amiel-35/ix-skills) est l'autre collection du même auteur : des skills de travail (cadrage, critique, décision, revue de contrat, synthèse…) et des postures de raisonnement (dixième homme, contrarian, red team, premiers principes…). ghost-council encode des méthodes de pensée, ix-skills des gestes de travail ; `/council` les fait siéger côte à côte.
+[ix-skills](https://github.com/amiel-35/ix-skills) est l'autre collection du même auteur : des skills de travail (cadrage, critique, décision, vérification des faits, synthèse…) et des postures de raisonnement (dixième homme, contrarian, red team, premiers principes…). ghost-council encode des méthodes de pensée, ix-skills des gestes de travail ; `/council` les fait siéger côte à côte.
 
 ## Feuille de route
 

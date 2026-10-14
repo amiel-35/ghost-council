@@ -44,14 +44,14 @@ Dans un terminal :
 
 ```bash
 claude plugin marketplace add amiel-35/ghost-council
-claude plugin install ghost-council
+claude plugin install ghost-council@ghost-council
 ```
 
 Redémarre Claude Code. Le skill `council` et tous les ghosts (Popper, Kant, Pascal…) sont alors disponibles. Mettre à jour plus tard :
 
 ```bash
 claude plugin marketplace update ghost-council
-claude plugin update ghost-council
+claude plugin update ghost-council@ghost-council
 ```
 
 ### Le plugin ix-skills (facultatif, recommandé)
@@ -60,10 +60,22 @@ Les angles de la famille `ix:` (dixième homme, contrarian, red team…) viennen
 
 ```bash
 claude plugin marketplace add amiel-35/ix-skills
-claude plugin install ix-skills
+claude plugin install ix-skills@ix-skills
 ```
 
-Le script cherche les angles `ix:` dans le cache du plugin, à la version la plus haute. Pour pointer ailleurs, régler la variable `COUNCIL_ANGLES_PATH` (des dossiers séparés par `:`, motifs `*` acceptés).
+Le script cherche les angles `ix:` dans le cache du plugin (`~/.claude/plugins/cache/*/ix-skills/*/skills`, donc qu'ix-skills vienne de sa propre marketplace ou du catalogue `amiel-35`), à la version la plus haute. Pour pointer ailleurs, régler la variable `COUNCIL_ANGLES_PATH` (des dossiers séparés par `:`, motifs `*` acceptés).
+
+### Le catalogue amiel-35 (autre voie d'installation)
+
+Les trois plugins de l'auteur (ix-skills, ix-recipes, ghost-council) sont aussi réunis dans la marketplace [amiel-35/plugins](https://github.com/amiel-35/plugins) :
+
+```bash
+claude plugin marketplace add amiel-35/plugins
+claude plugin install ghost-council@amiel-35
+claude plugin install ix-skills@amiel-35   # facultatif
+```
+
+Installer un plugin depuis une seule marketplace, pas depuis deux. Le conseil trouve ix-skills par défaut, quelle que soit la marketplace d'origine.
 
 ### Prérequis
 

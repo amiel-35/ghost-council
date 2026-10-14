@@ -6,7 +6,7 @@ La feuille de route résumée est dans le README ([FR](README.fr.md#feuille-de-r
 
 ## État au 2026-10-13
 
-- **Plugin 0.2.2**, 26 skills : 23 ghosts, Zeus (arbitre), `council`, `doc-skill`.
+- **Plugin 0.2.3**, 26 skills : 23 ghosts, Zeus (arbitre), `council`, `doc-skill`.
 - **`/council` livré** : formats `tour`, `compare` (qui remplace l'ancien `/compare`) et `deliberation` ; cinq familles d'angles (`ghost:`, `ix:`, `costume:`, `partie:`, `file:`) ; arbitre neutre par défaut ; un modèle par siège en option ; cadrage préparé (`CADRAGE.md` lu par les angles, `GRILLE.md` jamais) ; relecture isolée avant le tour, deux passes au plus ; 124 tests.
 - **Documentation** : [guide complet du conseil](docs/council/README.md) en FR et EN, fiches FR et EN de chaque skill, README au format standard (un fichier par langue).
 - **Mis à l'épreuve** sur des décisions réelles, puis comparé à advisory-council (nzanepro) sur un même brief, à froid : mêmes conclusions de fond ; `council` attrape les fuites de cadrage avant le tour, pour environ un tiers de coût en moins ; advisory-council rend une conclusion plus nette grâce à son vote en deux tours.
