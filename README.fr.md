@@ -77,7 +77,23 @@ claude plugin install ix-skills@ix-skills
 
 Les plugins de l'auteur (ix-skills, ix-recipes, ghost-council) sont aussi réunis dans une seule marketplace, [amiel-35/plugins](https://github.com/amiel-35/plugins) : `claude plugin marketplace add amiel-35/plugins`, puis `claude plugin install ghost-council@amiel-35`. Installer un plugin depuis une seule marketplace ; le conseil trouve ix-skills dans les deux cas.
 
-Pour mettre à jour : `claude plugin marketplace update ghost-council`, puis `claude plugin update ghost-council@ghost-council`. Sans plugin, copier un dossier `skills/<nom>/` dans `~/.claude/skills/` ; les ghosts sont du markdown pur et marchent aussi avec d'autres assistants.
+Pour mettre à jour : `claude plugin marketplace update ghost-council`, puis `claude plugin update ghost-council@ghost-council`. Sans plugin, copier un dossier `skills/<nom>/` dans `~/.claude/skills/` ; les ghosts sont du markdown pur et marchent aussi avec d'autres assistants (pour Codex et Antigravity, voir ci-dessous).
+
+### Codex et Antigravity (agy, Gemini)
+
+Les deux CLI lisent le même format de plugin (testé avec codex-cli 0.155.1 et agy 1.3.3). L'orchestration de `/council` est documentée pour Claude Code (sous-agents) ; ceci installe les ghosts pour les appliquer depuis Codex ou agy.
+
+```bash
+# Codex
+codex plugin marketplace add amiel-35/ghost-council
+codex plugin add ghost-council@ghost-council
+
+# Antigravity
+git clone https://github.com/amiel-35/ghost-council
+agy plugin import ghost-council/dist
+```
+
+Dans les deux cas, **nommer le skill dans la demande** (« utilise le skill popper du plugin ghost-council sur ce plan ») : sur une demande simple, Codex ne l'a pas utilisé. Utiliser `agy plugin import` (pas `validate` ni `install`, qui attendent un `plugin.json` à la racine). Le catalogue `amiel-35/plugins` n'est pas testé avec Codex. Commandes d'installation, de mise à jour et de retrait : voir le [README d'ix-skills](https://github.com/amiel-35/ix-skills/blob/main/README-fr.md#codex-cli). Si le script du conseil tourne hors de Claude Code, régler `COUNCIL_ANGLES_PATH` vers l'endroit où ix-skills vit là-bas, voir le [guide du conseil](docs/council/README.md#le-plugin-ix-skills-facultatif-recommandé).
 
 ## Les ghosts
 
@@ -146,7 +162,7 @@ flowchart LR
 - [ ] Les améliorations repérées en séance : un vote léger en `tour`, les séances de suivi
 - [ ] `/suggest` (quels ghosts pour ce problème ?) et `/evaluate` (un output a-t-il suivi la méthode ?)
 - [ ] De nouveaux esprits : Taleb, Munger, Kahneman, Arendt, Bourdieu, Feynman…
-- [ ] Une installation plus simple hors de Claude Code (Gemini CLI, GPT personnalisés)
+- [ ] Une installation plus simple hors de Claude Code (GPT personnalisés)
 
 Le détail dans [TODO.md](TODO.md).
 

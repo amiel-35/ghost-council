@@ -77,7 +77,23 @@ claude plugin install ix-skills@ix-skills
 
 The author's plugins (ix-skills, ix-recipes, ghost-council) are also listed together in one marketplace, [amiel-35/plugins](https://github.com/amiel-35/plugins): `claude plugin marketplace add amiel-35/plugins`, then `claude plugin install ghost-council@amiel-35`. Install a plugin from one marketplace only; the council finds ix-skills either way.
 
-To update later: `claude plugin marketplace update ghost-council`, then `claude plugin update ghost-council@ghost-council`. Without the plugin, copy a `skills/<name>/` folder into `~/.claude/skills/`; the ghosts are plain markdown and also work with other assistants.
+To update later: `claude plugin marketplace update ghost-council`, then `claude plugin update ghost-council@ghost-council`. Without the plugin, copy a `skills/<name>/` folder into `~/.claude/skills/`; the ghosts are plain markdown and also work with other assistants (for Codex and Antigravity, see below).
+
+### Codex and Antigravity (agy, Gemini)
+
+Both CLIs read the same plugin format (tested with codex-cli 0.155.1 and agy 1.3.3). The `/council` orchestration itself is documented for Claude Code (sub-agents); this installs the ghosts so they can be applied from Codex or agy.
+
+```bash
+# Codex
+codex plugin marketplace add amiel-35/ghost-council
+codex plugin add ghost-council@ghost-council
+
+# Antigravity
+git clone https://github.com/amiel-35/ghost-council
+agy plugin import ghost-council/dist
+```
+
+In both, **name the skill in your request** ("use the popper skill from the ghost-council plugin on this plan"): on a plain request, Codex did not use it. Use `agy plugin import` (not `validate` or `install`, which expect a `plugin.json` at the root). The `amiel-35/plugins` catalogue is not tested with Codex. Install, update and removal commands: see the [ix-skills README](https://github.com/amiel-35/ix-skills#codex-cli). If the council script runs outside Claude Code, set `COUNCIL_ANGLES_PATH` to where ix-skills lives there, see the [council guide](docs/council/README.en.md#the-ix-skills-plugin-optional-recommended).
 
 ## The ghosts
 
@@ -146,7 +162,7 @@ flowchart LR
 - [ ] Council refinements spotted in real sessions: a light vote in `tour`, follow-up sessions
 - [ ] `/suggest` (which ghosts for this problem?) and `/evaluate` (did an output follow the method?)
 - [ ] New minds: Taleb, Munger, Kahneman, Arendt, Bourdieu, Feynman…
-- [ ] Easier install outside Claude Code (Gemini CLI, custom GPTs)
+- [ ] Easier install outside Claude Code (custom GPTs)
 
 Details in [TODO.md](TODO.md).
 

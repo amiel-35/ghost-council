@@ -65,6 +65,21 @@ claude plugin install ix-skills@ix-skills
 
 Le script cherche les angles `ix:` dans le cache du plugin (`~/.claude/plugins/cache/*/ix-skills/*/skills`, donc qu'ix-skills vienne de sa propre marketplace ou du catalogue `amiel-35`), à la version la plus haute. Pour pointer ailleurs, régler la variable `COUNCIL_ANGLES_PATH` (des dossiers séparés par `:`, motifs `*` acceptés).
 
+Quand le script tourne hors de Claude Code, ix-skills vit ailleurs (installé avec `codex plugin add ix-skills@ix-skills` ou `agy plugin import ix-skills/dist`, voir le [README d'ix-skills](https://github.com/amiel-35/ix-skills/blob/main/README-fr.md#codex-cli)). Pointer la variable dessus :
+
+| Où vit ix-skills | `COUNCIL_ANGLES_PATH` |
+|---|---|
+| Claude Code (défaut, rien à régler) | `~/.claude/plugins/cache/*/ix-skills/*/skills` |
+| Codex | `~/.codex/plugins/cache/ix-skills/ix-skills/*/skills` |
+| Antigravity (agy) | `~/.gemini/config/plugins/ix-skills/skills` |
+
+```bash
+export COUNCIL_ANGLES_PATH="$HOME/.codex/plugins/cache/ix-skills/ix-skills/*/skills"   # Codex
+export COUNCIL_ANGLES_PATH="$HOME/.gemini/config/plugins/ix-skills/skills"             # Antigravity
+```
+
+Codex et agy servent aussi de *sièges* du conseil (voir [§8](#8-un-modèle-par-siège)) : cela n'exige que la CLI, pas ces installations.
+
 ### Le catalogue amiel-35 (autre voie d'installation)
 
 Les trois plugins de l'auteur (ix-skills, ix-recipes, ghost-council) sont aussi réunis dans la marketplace [amiel-35/plugins](https://github.com/amiel-35/plugins) :
